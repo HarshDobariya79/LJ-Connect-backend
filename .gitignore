@@ -1,0 +1,7 @@
+# Django keys
+
+backend/LJConnect/.env
+
+# Django environment
+
+backend/env/
