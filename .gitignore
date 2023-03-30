@@ -1,0 +1,7 @@
+# Django keys
+
+backend/core/.env
+
+# Django environment
+
+backend/env/
