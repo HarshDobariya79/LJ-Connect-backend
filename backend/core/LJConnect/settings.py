@@ -39,6 +39,9 @@ INSTALLED_APPS = [
 
     # Additional installed packages
     'decouple',
+
+    # Created apps
+    "data",
 ]
 
 MIDDLEWARE = [
