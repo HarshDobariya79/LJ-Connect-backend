@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import RegexValidator
-from django.forms import CharField, URLField, FileField
 
 
 class StaffDetail(models.Model):
@@ -71,8 +70,11 @@ class Weightage(models.Model):
         verbose_name = 'Weightage'
 
     def __str__(self):
-        # subject = self.subject_set.all().first()
-        return f"{self.teaching_type} {self.category}"  #changes here
+        subject = self.subject_set().first()
+        if subject:
+            return f"{subject.subject_short_name} {self.teaching_type} {self.category}"
+        else:
+            return f"{self.teaching_type} {self.category}"
 
 
 class Subject(models.Model):
@@ -113,7 +115,7 @@ class StudentDetail(models.Model):
         ('O', 'Other'),
     ]
 
-    enrolment_no = models.CharField(max_length=14, primary_key=True)  #changes here
+    enrolment_no = models.CharField(max_length=16, primary_key=True) 
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email', help_text='e.g. enrolment_number@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(max_length=20, null=True, verbose_name='Middle Name')
@@ -164,25 +166,25 @@ class Batch(models.Model):
 
 class StudyResource(models.Model):
     subject = models.ForeignKey("Subject", verbose_name='Subject', on_delete=models.CASCADE)
+    name = models.CharField(max_length=40, verbose_name='Resource Name')
     resource_type = models.CharField(max_length=50, verbose_name='Resource Type')
-    file = models.FileField(verbose_name='Study Resource File', null=True, blank=True, upload_to='study_resources/')
-    url = models.URLField(max_length=200,verbose_name='Study Resource URL', help_text="Enter a valid URL for study resource", null=True, blank=True)
-
+    upload_date = models.DateField(verbose_name='Upload Date', help_text='dd-mm-yyyy')
+    file = models.FileField(verbose_name='Study Resource File', upload_to='study_resources/')
     class Meta:
         verbose_name_plural = 'Study Resources'
         verbose_name = 'Study Resource'
         
     def __str__(self):
-        return self.subject.subject_short_name + ' ' + self.resource_type   #changes here
+        return self.subject.subject_short_name + ' ' + self.resource_type   
 
 
 class Department(models.Model):
-    year = models.CharField(max_length=4, verbose_name='Year')
-    semester = models.PositiveSmallIntegerField(verbose_name='Semester')
+    year = models.CharField(max_length=7, verbose_name='Year',help_text='e.g. 2022-23')
+    semester = models.PositiveSmallIntegerField(verbose_name='Semester', help_text='e.g. 1')
     branch = models.ManyToManyField("Branch", verbose_name='Branch')
     batch = models.ManyToManyField("Batch", verbose_name='Batch')
     department_name = models.CharField(max_length=20, verbose_name='Department Name')
-    hod = models.ForeignKey("StaffDetail", on_delete=models.CASCADE)
+    hod = models.ForeignKey("StaffDetail",verbose_name='Head of Department', on_delete=models.CASCADE)
     study_resources = models.ManyToManyField("StudyResource", verbose_name='Study Resources')
 
     class Meta:
@@ -195,13 +197,13 @@ class Department(models.Model):
 
 class Attendance(models.Model):
     RESOURCE_TYPE_CHOICES = (
-        ('REGULAR', 'Regular'),
-        ('ADJUSTMENT', 'Adjustment')
+        ('R', 'Regular'),
+        ('PRX', 'proxy')
     )
     date = models.DateField(verbose_name='Date', help_text='dd-mm-yyyy')
     subject = models.ForeignKey("Subject", verbose_name='Subject', on_delete=models.CASCADE)
-    mode = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES, default='REGULAR', verbose_name='Mode')
-    present = models.BooleanField(help_text='If student is present or not.', verbose_name='Present')
+    mode = models.CharField(max_length=5, choices=RESOURCE_TYPE_CHOICES, default='R', verbose_name='Mode')
+    present = models.BooleanField(verbose_name='Present', help_text='If student is present or not.')
 
     class Meta:
         verbose_name_plural = "Attendances"
@@ -212,11 +214,11 @@ class Attendance(models.Model):
 
 
 class RemedialTestResult(models.Model):
-    theory = models.FloatField(verbose_name='Remedial Theory')
-    individual_project = models.FloatField(verbose_name='Remedial Individual Project')
-    group_project = models.FloatField(verbose_name='Remedial Group project')
-    ipe = models.FloatField(verbose_name='Remedial IPE')
-    other = models.FloatField(verbose_name='Remedial other')
+    theory = models.FloatField(verbose_name='Theory', null=True)
+    individual_project = models.FloatField(verbose_name='Individual Project', null=True)
+    group_project = models.FloatField(verbose_name='Group project', null=True)
+    ipe = models.FloatField(verbose_name='IPE', null=True)
+    other = models.FloatField(verbose_name='other', null=True)
 
     class Meta:
         verbose_name_plural = "Remedial Test Results"
