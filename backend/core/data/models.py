@@ -72,7 +72,7 @@ class Weightage(models.Model):
 
     def __str__(self):
         # subject = self.subject_set.all().first()
-        return f"{self.teaching_type} {self.category}"  
+        return f"{self.teaching_type} {self.category}"  #changes here
 
 
 class Subject(models.Model):
@@ -113,7 +113,7 @@ class StudentDetail(models.Model):
         ('O', 'Other'),
     ]
 
-    enrolment_no = models.CharField(max_length=14, primary_key=True)  
+    enrolment_no = models.CharField(max_length=14, primary_key=True)  #changes here
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email', help_text='e.g. enrolment_number@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(max_length=20, null=True, verbose_name='Middle Name')
@@ -161,6 +161,7 @@ class Batch(models.Model):
         return self.batch_name
 
 
+
 class StudyResource(models.Model):
     subject = models.ForeignKey("Subject", verbose_name='Subject', on_delete=models.CASCADE)
     resource_type = models.CharField(max_length=50, verbose_name='Resource Type')
@@ -172,7 +173,7 @@ class StudyResource(models.Model):
         verbose_name = 'Study Resource'
         
     def __str__(self):
-        return self.subject.subject_short_name + ' ' + self.resource_type   
+        return self.subject.subject_short_name + ' ' + self.resource_type   #changes here
 
 
 class Department(models.Model):
