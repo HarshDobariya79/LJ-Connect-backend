@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.forms import CharField, URLField, FileField
 
 
 class StaffDetail(models.Model):
@@ -70,7 +71,8 @@ class Weightage(models.Model):
         verbose_name = 'Weightage'
 
     def __str__(self):
-        return self.subject_set().subject_short_name + ' ' + self.teaching_type + ' ' + self.category
+        # subject = self.subject_set.all().first()
+        return f"{self.teaching_type} {self.category}"  
 
 
 class Subject(models.Model):
@@ -111,7 +113,7 @@ class StudentDetail(models.Model):
         ('O', 'Other'),
     ]
 
-    enrolment_no = models.PositiveIntegerField(primary_key=True)
+    enrolment_no = models.CharField(max_length=14, primary_key=True)  
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email', help_text='e.g. enrolment_number@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(max_length=20, null=True, verbose_name='Middle Name')
@@ -144,4 +146,80 @@ class FacultyAllocation(models.Model):
 
     def __str__(self):
         return self.faculty.email
-    
+
+
+class Batch(models.Model):
+    batch_name = models.CharField(max_length=10, verbose_name='Batch Name')
+    faculty = models.ManyToManyField("FacultyAllocation", verbose_name='Faculty', help_text='Faculty allocated to batch')
+    student = models.ManyToManyField("StudentDetail", verbose_name='Student', help_text='Student allocated to batch')
+
+    class Meta:
+        verbose_name_plural = 'Batches'
+        verbose_name = 'Batch'
+
+    def __str__(self):
+        return self.batch_name
+
+
+class StudyResource(models.Model):
+    subject = models.ForeignKey("Subject", verbose_name='Subject', on_delete=models.CASCADE)
+    resource_type = models.CharField(max_length=50, verbose_name='Resource Type')
+    file = models.FileField(verbose_name='Study Resource File', null=True, blank=True, upload_to='study_resources/')
+    url = models.URLField(max_length=200,verbose_name='Study Resource URL', help_text="Enter a valid URL for study resource", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Study Resources'
+        verbose_name = 'Study Resource'
+        
+    def __str__(self):
+        return self.subject.subject_short_name + ' ' + self.resource_type   
+
+
+class Department(models.Model):
+    year = models.CharField(max_length=4, verbose_name='Year')
+    semester = models.PositiveSmallIntegerField(verbose_name='Semester')
+    branch = models.ManyToManyField("Branch", verbose_name='Branch')
+    batch = models.ManyToManyField("Batch", verbose_name='Batch')
+    department_name = models.CharField(max_length=20, verbose_name='Department Name')
+    hod = models.ForeignKey("StaffDetail", on_delete=models.CASCADE)
+    study_resources = models.ManyToManyField("StudyResource", verbose_name='Study Resources')
+
+    class Meta:
+        verbose_name_plural = 'Departments'
+        verbose_name = 'Department'
+
+    def __str__(self):
+        return self.department_name
+
+
+class Attendance(models.Model):
+    RESOURCE_TYPE_CHOICES = (
+        ('REGULAR', 'Regular'),
+        ('ADJUSTMENT', 'Adjustment')
+    )
+    date = models.DateField(verbose_name='Date', help_text='dd-mm-yyyy')
+    subject = models.ForeignKey("Subject", verbose_name='Subject', on_delete=models.CASCADE)
+    mode = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES, default='REGULAR', verbose_name='Mode')
+    present = models.BooleanField(help_text='If student is present or not.', verbose_name='Present')
+
+    class Meta:
+        verbose_name_plural = "Attendances"
+        verbose_name = "Attendance"
+
+    def __str__(self):
+        return self.subject_short_name + ' ' + self.date
+
+
+class RemedialTestResult(models.Model):
+    theory = models.FloatField(verbose_name='Remedial Theory')
+    individual_project = models.FloatField(verbose_name='Remedial Individual Project')
+    group_project = models.FloatField(verbose_name='Remedial Group project')
+    ipe = models.FloatField(verbose_name='Remedial IPE')
+    other = models.FloatField(verbose_name='Remedial other')
+
+    class Meta:
+        verbose_name_plural = "Remedial Test Results"
+        verbose_name = "Remedial Test Result"
+
+    def __str__(self):
+        return f'Remedial Test Result {self.id}'
