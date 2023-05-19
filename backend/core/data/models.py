@@ -11,22 +11,22 @@ class StaffDetail(models.Model):
     ]
 
     CATEGORY_CHOICES = [
-        ('teaching', 'Teaching'),
-        ('non-teaching', 'Non-Teaching'),
+        ('T', 'Teaching'),
+        ('NT', 'Non-Teaching'),
     ]
 
-    email = models.EmailField(primary_key=True, max_length=254, unique=True,
-                              verbose_name='Email', help_text='e.g. firstname.lastname@ljku.edu.in')
+    email = models.EmailField(null=True, blank=True, max_length=254, default=None, verbose_name='Email',
+                              help_text='e.g. firstname.lastname@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(
-        max_length=20, null=True, verbose_name='Middle Name')
+        max_length=20, null=True, blank=True, verbose_name='Middle Name')
     last_name = models.CharField(max_length=20, verbose_name='Last Name')
     short_name = models.CharField(
         max_length=5, verbose_name='Short Name', help_text='e.g. DKT')
     gender = models.CharField(choices=GENDER_CHOICES,
                               max_length=1, verbose_name='Gender')
     birth_date = models.DateField(
-        verbose_name='Birth Date', help_text='dd-mm-yyyy')
+        verbose_name='Birth Date', help_text='dd/mm/yyyy')
     mobile_number = models.CharField(max_length=15, validators=[
         RegexValidator(
             regex=r'^\+?\d{6,15}$',
@@ -34,7 +34,7 @@ class StaffDetail(models.Model):
         ),
     ], verbose_name='Mobile Number', help_text='e.g. +1234567890')
     category = models.CharField(
-        max_length=20, choices=CATEGORY_CHOICES, verbose_name='Category')
+        max_length=2, choices=CATEGORY_CHOICES, verbose_name='Category')
     active = models.BooleanField(
         default=True, verbose_name='Active', help_text='Is the staff actively doing his/her job?')
 
@@ -43,7 +43,7 @@ class StaffDetail(models.Model):
         verbose_name = 'Staff Detail'
 
     def __str__(self):
-        return self.email
+        return self.first_name + ' ' + self.middle_name + ' ' + self.last_name
 
 
 class Weightage(models.Model):
@@ -67,12 +67,13 @@ class Weightage(models.Model):
     ]
 
     teaching_type = models.CharField(
-        choices=TEACHING_TYPE_CHOICES, max_length=15)
-    category = models.CharField(choices=CATEGOTY_CHOICES, max_length=50)
+        choices=TEACHING_TYPE_CHOICES, verbose_name='Teaching Type', max_length=2)
+    category = models.CharField(
+        choices=CATEGOTY_CHOICES, verbose_name='Category', max_length=25)
     percentage_weightage = models.PositiveSmallIntegerField(
-        help_text='Percemtage weightage distribution.')
+        verbose_name='Percentage Weightage', help_text='Percemtage weightage distribution.')
     marks_weightage = models.PositiveSmallIntegerField(
-        help_text='Marks weightage distribution.')
+        verbose_name='Marks Weightage', help_text='Marks weightage distribution.')
 
     class Meta:
         verbose_name_plural = 'Weightages'
@@ -81,9 +82,9 @@ class Weightage(models.Model):
     def __str__(self):
         subject = self.subject_set().first()
         if subject:
-            return f"{subject.subject_short_name} {self.teaching_type} {self.category}"
+            return f'{subject.subject_short_name} {self.teaching_type} {self.category}'
         else:
-            return f"{self.teaching_type} {self.category}"
+            return f'{self.teaching_type} {self.category}'
 
 
 class Subject(models.Model):
@@ -98,11 +99,11 @@ class Subject(models.Model):
     theory_credit = models.PositiveSmallIntegerField(
         verbose_name='Theory Credit', help_text='Theory credit of the subject.')
     tutorial_credit = models.PositiveSmallIntegerField(
-        null=True, verbose_name='Tutorial Credit', help_text='Tutorial credit of the subject.')
+        null=True, blank=True, verbose_name='Tutorial Credit', help_text='Tutorial credit of the subject.')
     practical_credit = models.PositiveSmallIntegerField(
-        null=True, verbose_name='Practical Credit', help_text='Practical credit of the subject.')
+        null=True, blank=True, verbose_name='Practical Credit', help_text='Practical credit of the subject.')
     Weightage = models.ManyToManyField(
-        "Weightage", verbose_name='Weightage', help_text='Weightage distribution of the subject')
+        'Weightage', verbose_name='Weightage', help_text='Weightage distribution of the subject')
 
     class Meta:
         verbose_name_plural = 'Subjects'
@@ -119,8 +120,8 @@ class Branch(models.Model):
         max_length=10, verbose_name='Branch Name', help_text='e.g. CSE')
     branch_full_name = models.CharField(
         max_length=50, verbose_name='Branch Full Name', help_text='e.g. Computer Science and Engineering')
-    available = models.BooleanField(
-        default=True, help_text='If branch is currently available to enrollment.')
+    available = models.BooleanField(default=True, verbose_name='Available',
+                                    help_text='If branch is currently available to enrollment.')
 
     class Meta:
         verbose_name_plural = 'Branches'
@@ -138,24 +139,25 @@ class StudentDetail(models.Model):
         ('O', 'Other'),
     ]
 
-    enrolment_no = models.CharField(max_length=16, primary_key=True)
+    enrolment_no = models.CharField(
+        max_length=16, primary_key=True, verbose_name='Enrolmentment No')
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email',
                               help_text='e.g. enrolment_number@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(
-        max_length=20, null=True, verbose_name='Middle Name')
+        max_length=20, null=True, blank=True, verbose_name='Middle Name')
     last_name = models.CharField(max_length=20, verbose_name='Last Name')
     gender = models.CharField(choices=GENDER_CHOICES,
                               max_length=1, verbose_name='Gender')
     birth_date = models.DateField(
-        verbose_name='Birth Date', help_text='dd-mm-yyyy')
+        verbose_name='Birth Date', help_text='dd/mm/yyyy')
     mobile_number = models.CharField(max_length=15, validators=[
         RegexValidator(
             regex=r'^\+?\d{6,15}$',
             message='Mobile number must be in international format with no spaces or special characters.',
         ),
     ], verbose_name='Mobile Number', help_text='e.g. +1234567890')
-    branch = models.ForeignKey("Branch", verbose_name='Branch',
+    branch = models.ForeignKey('Branch', verbose_name='Branch',
                                help_text='Branch details where student is enrolled.', on_delete=models.CASCADE)
 
     class Meta:
@@ -167,9 +169,9 @@ class StudentDetail(models.Model):
 
 
 class FacultyAllocation(models.Model):
-    faculty = models.ForeignKey("StaffDetail", verbose_name='Faculty',
+    faculty = models.ForeignKey('StaffDetail', verbose_name='Faculty',
                                 help_text='Faculty details', on_delete=models.CASCADE)
-    subject = models.ForeignKey("Subject", verbose_name='Subject',
+    subject = models.ForeignKey('Subject', verbose_name='Subject',
                                 help_text='Subject details', on_delete=models.CASCADE)
 
     class Meta:
@@ -183,9 +185,9 @@ class FacultyAllocation(models.Model):
 class Batch(models.Model):
     batch_name = models.CharField(max_length=10, verbose_name='Batch Name')
     faculty = models.ManyToManyField(
-        "FacultyAllocation", verbose_name='Faculty', help_text='Faculty allocated to batch')
+        'FacultyAllocation', verbose_name='Faculty', help_text='Faculty allocated to batch')
     student = models.ManyToManyField(
-        "StudentDetail", verbose_name='Student', help_text='Student allocated to batch')
+        'StudentDetail', verbose_name='Student', help_text='Student allocated to batch')
 
     class Meta:
         verbose_name_plural = 'Batches'
@@ -197,12 +199,12 @@ class Batch(models.Model):
 
 class StudyResource(models.Model):
     subject = models.ForeignKey(
-        "Subject", verbose_name='Subject', on_delete=models.CASCADE)
+        'Subject', verbose_name='Subject', on_delete=models.CASCADE)
     name = models.CharField(max_length=40, verbose_name='Resource Name')
     resource_type = models.CharField(
         max_length=50, verbose_name='Resource Type')
     upload_date = models.DateField(
-        verbose_name='Upload Date', help_text='dd-mm-yyyy')
+        verbose_name='Upload Date', help_text='dd/mm/yyyy')
     file = models.FileField(
         verbose_name='Study Resource File', upload_to='study_resources/')
 
@@ -219,14 +221,14 @@ class Department(models.Model):
         max_length=7, verbose_name='Year', help_text='e.g. 2022-23')
     semester = models.PositiveSmallIntegerField(
         verbose_name='Semester', help_text='e.g. 1')
-    branch = models.ManyToManyField("Branch", verbose_name='Branch')
-    batch = models.ManyToManyField("Batch", verbose_name='Batch')
+    branch = models.ManyToManyField('Branch', verbose_name='Branch')
+    batch = models.ManyToManyField('Batch', verbose_name='Batch')
     department_name = models.CharField(
         max_length=20, verbose_name='Department Name')
     hod = models.ForeignKey(
-        "StaffDetail", verbose_name='Head of Department', on_delete=models.CASCADE)
+        'StaffDetail', verbose_name='Head of Department', on_delete=models.CASCADE)
     study_resources = models.ManyToManyField(
-        "StudyResource", verbose_name='Study Resources')
+        'StudyResource', verbose_name='Study Resources')
 
     class Meta:
         verbose_name_plural = 'Departments'
@@ -241,17 +243,17 @@ class Attendance(models.Model):
         ('R', 'Regular'),
         ('PRX', 'proxy')
     )
-    date = models.DateField(verbose_name='Date', help_text='dd-mm-yyyy')
+    date = models.DateField(verbose_name='Date', help_text='dd/mm/yyyy')
     subject = models.ForeignKey(
-        "Subject", verbose_name='Subject', on_delete=models.CASCADE)
+        'Subject', verbose_name='Subject', on_delete=models.CASCADE)
     mode = models.CharField(
         max_length=5, choices=RESOURCE_TYPE_CHOICES, default='R', verbose_name='Mode')
     present = models.BooleanField(
         verbose_name='Present', help_text='If student is present or not.')
 
     class Meta:
-        verbose_name_plural = "Attendances"
-        verbose_name = "Attendance"
+        verbose_name_plural = 'Attendances'
+        verbose_name = 'Attendance'
 
     def __str__(self):
         return self.subject_short_name + ' ' + self.date
@@ -266,8 +268,8 @@ class RemedialTestResult(models.Model):
     other = models.FloatField(verbose_name='other', null=True)
 
     class Meta:
-        verbose_name_plural = "Remedial Test Results"
-        verbose_name = "Remedial Test Result"
+        verbose_name_plural = 'Remedial Test Results'
+        verbose_name = 'Remedial Test Result'
 
     def __str__(self):
         return 'Remedial Test Result ' + self.id
@@ -275,38 +277,38 @@ class RemedialTestResult(models.Model):
 
 class TestResult(models.Model):
     subject = models.ForeignKey(
-        "Subject", verbose_name='Subject', on_delete=models.CASCADE)
-    T1 = models.FloatField(verbose_name='T1', null=True,
-                           help_text="Test 1 Result")
-    T2 = models.FloatField(verbose_name='T2', null=True,
-                           help_text="Test 2 Result")
-    T3 = models.FloatField(verbose_name='T3', null=True,
-                           help_text="Test 3 Result")
-    T4 = models.FloatField(verbose_name='T4', null=True,
-                           help_text="Test 4 Result")
+        'Subject', verbose_name='Subject', on_delete=models.CASCADE)
+    T1 = models.FloatField(verbose_name='T1', null=True, blank=True,
+                           help_text='Test 1 Result')
+    T2 = models.FloatField(verbose_name='T2', null=True, blank=True,
+                           help_text='Test 2 Result')
+    T3 = models.FloatField(verbose_name='T3', null=True, blank=True,
+                           help_text='Test 3 Result')
+    T4 = models.FloatField(verbose_name='T4', null=True, blank=True,
+                           help_text='Test 4 Result')
     T1_file = models.FileField(
-        verbose_name='T1 Files', upload_to='test_files/', null=True, help_text="Test 1 Scanned Copy")
+        verbose_name='T1 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 1 Scanned Copy')
     T2_file = models.FileField(
-        verbose_name='T2 Files', upload_to='test_files/', null=True, help_text="Test 2 Scanned Copy")
+        verbose_name='T2 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 2 Scanned Copy')
     T3_file = models.FileField(
-        verbose_name='T3 Files', upload_to='test_files/', null=True, help_text="Test 3 Scanned Copy")
+        verbose_name='T3 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 3 Scanned Copy')
     T4_file = models.FileField(
-        verbose_name='T4 Files', upload_to='test_files/', null=True, help_text="Test 4 Scanned Copy")
+        verbose_name='T4 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 4 Scanned Copy')
 
     individual_project = models.FloatField(
         verbose_name='Individual Project', null=True)
     group_project = models.FloatField(verbose_name='Group Project', null=True)
     ipe = models.FloatField(
-        verbose_name='IPE', null=True, help_text="IPE Marks")
+        verbose_name='IPE', null=True, blank=True, help_text='IPE Marks')
     other = models.FloatField(verbose_name='Other', null=True)
     bonus = models.FloatField(
-        verbose_name='Bonus', null=True, help_text="HOD Bonus, Attendance Bonus etc.")
+        verbose_name='Bonus', null=True, blank=True, help_text='HOD Bonus, Attendance Bonus etc.')
     remedial_result = models.ManyToManyField(
-        "RemedialTestResult", verbose_name="Remedial Result")
+        'RemedialTestResult', verbose_name='Remedial Result')
 
     class Meta:
-        verbose_name_plural = "Test Results"
-        verbose_name = "Test Result"
+        verbose_name_plural = 'Test Results'
+        verbose_name = 'Test Result'
 
     def _str_(self):
         return 'Test Result ' + self.subject
@@ -315,13 +317,13 @@ class TestResult(models.Model):
 class MOOCCourses(models.Model):
     course_name = models.CharField(max_length=100, verbose_name='Course')
     platform = models.CharField(
-        max_length=30, verbose_name='Platform', help_text="e.g. Coursera")
+        max_length=30, verbose_name='Platform', help_text='e.g. Coursera')
     university = models.CharField(
         max_length=60, verbose_name='University')
 
     class Meta:
-        verbose_name_plural = "MOOC Courses"
-        verbose_name = "MOOC Course"
+        verbose_name_plural = 'MOOC Courses'
+        verbose_name = 'MOOC Course'
 
     def _str_(self):
         return self.course_name
@@ -329,14 +331,14 @@ class MOOCCourses(models.Model):
 
 class MOOCResult(models.Model):
     course = models.ForeignKey(
-        "MOOCCourses", verbose_name="MOOC Course", on_delete=models.CASCADE)
-    percentage = models.FloatField(verbose_name="Percentage", null=True)
+        'MOOCCourses', verbose_name='MOOC Course', on_delete=models.CASCADE)
+    percentage = models.FloatField(verbose_name='Percentage', null=True)
     certificate = models.URLField(
-        verbose_name="Certificate", max_length=200, null=True)
+        verbose_name='Certificate', max_length=200, null=True)
 
     class Meta:
-        verbose_name_plural = "MOOC Results"
-        verbose_name = "MOOC Result"
+        verbose_name_plural = 'MOOC Results'
+        verbose_name = 'MOOC Result'
 
     def _str_(self):
         return self.course.course_name
@@ -344,66 +346,66 @@ class MOOCResult(models.Model):
 
 class IndividualProject(models.Model):
     subject = models.ForeignKey(
-        "Subject", verbose_name="Subject", on_delete=models.CASCADE)
-    definition = models.TextField(verbose_name="Project Definition")
+        'Subject', verbose_name='Subject', on_delete=models.CASCADE)
+    definition = models.TextField(verbose_name='Project Definition')
     create_timestamp = models.DateTimeField(
-        verbose_name="Create Timestamp", auto_now_add=True)
+        verbose_name='Create Timestamp', auto_now_add=True)
     update_timestamp = models.DateTimeField(
-        verbose_name="Update Timestamp", auto_now=True)
+        verbose_name='Update Timestamp', auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Individual Projects"
-        verbose_name = "Individual Project"
+        verbose_name_plural = 'Individual Projects'
+        verbose_name = 'Individual Project'
 
     def _str_(self):
         student = self.studentsemesterrecord_set().first()
         if student:
-            return self.subject + "_" + student.roll_no
+            return self.subject + '_' + student.roll_no
         else:
             return self.subject
 
 
 class GroupProject(models.Model):
     subject = models.ForeignKey(
-        "Subject", verbose_name="Subject", on_delete=models.CASCADE)
-    definition = models.TextField(verbose_name="Project Definition")
+        'Subject', verbose_name='Subject', on_delete=models.CASCADE)
+    definition = models.TextField(verbose_name='Project Definition')
     create_timestamp = models.DateTimeField(
-        verbose_name="Create Timestamp", auto_now_add=True)
+        verbose_name='Create Timestamp', auto_now_add=True)
     update_timestamp = models.DateTimeField(
-        verbose_name="Update Timestamp", auto_now=True)
+        verbose_name='Update Timestamp', auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Group Projects"
-        verbose_name = "Group Project"
+        verbose_name_plural = 'Group Projects'
+        verbose_name = 'Group Project'
 
     def _str_(self):
         students = self.studentsemesterrecord_set()
         return_text = self.subject
         for i in students:
-            return_text = return_text + "_" + students.roll_no
+            return_text = return_text + '_' + students.roll_no
         return return_text
 
 
 class StudentSemesterRecord(models.Model):
     student = models.ForeignKey(
-        "StudentDetail", verbose_name="Student Details", on_delete=models.CASCADE)
+        'StudentDetail', verbose_name='Student Details', on_delete=models.CASCADE)
     department = models.ForeignKey(
-        "Department", verbose_name="Department", on_delete=models.CASCADE)
-    roll_no = models.IntegerField(verbose_name="Roll No")
+        'Department', verbose_name='Department', on_delete=models.CASCADE)
+    roll_no = models.IntegerField(verbose_name='Roll No')
     attendance = models.ManyToManyField(
-        "Attendance", verbose_name="Attendance")
+        'Attendance', verbose_name='Attendance')
     test_result = models.ManyToManyField(
-        "TestResult", verbose_name="Test Result"),
+        'TestResult', verbose_name='Test Result'),
     MOOCCourses = models.ManyToManyField(
-        "MOOCResult", verbose_name="MOOC Courses")
+        'MOOCResult', verbose_name='MOOC Courses')
     individual_project = models.ManyToManyField(
-        "IndividualProject", verbose_name="Individual Project")
+        'IndividualProject', verbose_name='Individual Project')
     group_project = models.ManyToManyField(
-        "GroupProject", verbose_name="Group Project")
+        'GroupProject', verbose_name='Group Project')
 
     class Meta:
-        verbose_name_plural = "Student Semester Records"
-        verbose_name = "Student Semester Record"
+        verbose_name_plural = 'Student Semester Records'
+        verbose_name = 'Student Semester Record'
 
     def _str_(self):
         return self.student.enrolment_no

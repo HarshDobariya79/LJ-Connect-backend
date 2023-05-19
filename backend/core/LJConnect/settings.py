@@ -129,3 +129,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+# To set date format as dd/mm/yyyy
+DATE_INPUT_FORMATS = ["%d/%m/%Y"]
+USE_L10N = False
