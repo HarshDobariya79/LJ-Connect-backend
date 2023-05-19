@@ -71,7 +71,7 @@ class Weightage(models.Model):
     category = models.CharField(
         choices=CATEGOTY_CHOICES, verbose_name='Category', max_length=25)
     percentage_weightage = models.PositiveSmallIntegerField(
-        verbose_name='Percentage Weightage', help_text='Percemtage weightage distribution.')
+        verbose_name='Percentage Weightage', help_text='Percentage weightage distribution.')
     marks_weightage = models.PositiveSmallIntegerField(
         verbose_name='Marks Weightage', help_text='Marks weightage distribution.')
 
@@ -183,7 +183,7 @@ class FacultyAllocation(models.Model):
 
 
 class Batch(models.Model):
-    batch_name = models.CharField(max_length=10, verbose_name='Batch Name')
+    name = models.CharField(max_length=10, verbose_name='Batch Name')
     faculty = models.ManyToManyField(
         'FacultyAllocation', verbose_name='Faculty', help_text='Faculty allocated to batch')
     student = models.ManyToManyField(
@@ -194,7 +194,11 @@ class Batch(models.Model):
         verbose_name = 'Batch'
 
     def __str__(self):
-        return self.batch_name
+        department = self.department_set().first()
+        if department:
+            return f'{department.year}_{department.semester}_{department.department_name}_{self.name}'
+        else:
+            return f'{self.name}'
 
 
 class StudyResource(models.Model):
@@ -224,7 +228,7 @@ class Department(models.Model):
     branch = models.ManyToManyField('Branch', verbose_name='Branch')
     batch = models.ManyToManyField('Batch', verbose_name='Batch')
     department_name = models.CharField(
-        max_length=20, verbose_name='Department Name')
+        max_length=20, verbose_name='Department Name', help_text='e.g. CE_IT_2')
     hod = models.ForeignKey(
         'StaffDetail', verbose_name='Head of Department', on_delete=models.CASCADE)
     study_resources = models.ManyToManyField(
@@ -235,7 +239,7 @@ class Department(models.Model):
         verbose_name = 'Department'
 
     def __str__(self):
-        return self.department_name
+        return f'{self.year}_{self.semester}_{self.department_name}'
 
 
 class Attendance(models.Model):
@@ -254,18 +258,24 @@ class Attendance(models.Model):
     class Meta:
         verbose_name_plural = 'Attendances'
         verbose_name = 'Attendance'
+        ordering = ['-date']  # Sort by date field in descending order (most recent first)
 
     def __str__(self):
-        return self.subject_short_name + ' ' + self.date
+        student_semester_record = self.studentsemesterrecord_set.first()
+        if student_semester_record:
+            department = student_semester_record.department
+            return f'{department.semester}_{department.department_name}_{self.subject_short_name} {self.date}'
+        else:
+            return f'{self.subject_short_name} {self.date}'
 
 
 class RemedialTestResult(models.Model):
-    theory = models.FloatField(verbose_name='Theory', null=True)
+    theory = models.FloatField(verbose_name='Theory', null=True, blank=True)
     individual_project = models.FloatField(
-        verbose_name='Individual Project', null=True)
-    group_project = models.FloatField(verbose_name='Group project', null=True)
-    ipe = models.FloatField(verbose_name='IPE', null=True)
-    other = models.FloatField(verbose_name='other', null=True)
+        verbose_name='Individual Project', null=True, blank=True)
+    group_project = models.FloatField(verbose_name='Group project', null=True, blank=True)
+    ipe = models.FloatField(verbose_name='IPE', null=True, blank=True)
+    other = models.FloatField(verbose_name='other', null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Remedial Test Results'
@@ -296,11 +306,11 @@ class TestResult(models.Model):
         verbose_name='T4 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 4 Scanned Copy')
 
     individual_project = models.FloatField(
-        verbose_name='Individual Project', null=True)
-    group_project = models.FloatField(verbose_name='Group Project', null=True)
+        verbose_name='Individual Project', null=True, blank=True)
+    group_project = models.FloatField(verbose_name='Group Project', null=True, blank=True)
     ipe = models.FloatField(
         verbose_name='IPE', null=True, blank=True, help_text='IPE Marks')
-    other = models.FloatField(verbose_name='Other', null=True)
+    other = models.FloatField(verbose_name='Other', null=True, blank=True)
     bonus = models.FloatField(
         verbose_name='Bonus', null=True, blank=True, help_text='HOD Bonus, Attendance Bonus etc.')
     remedial_result = models.ManyToManyField(
@@ -332,9 +342,9 @@ class MOOCCourses(models.Model):
 class MOOCResult(models.Model):
     course = models.ForeignKey(
         'MOOCCourses', verbose_name='MOOC Course', on_delete=models.CASCADE)
-    percentage = models.FloatField(verbose_name='Percentage', null=True)
+    percentage = models.FloatField(verbose_name='Percentage', null=True, blank=True)
     certificate = models.URLField(
-        verbose_name='Certificate', max_length=200, null=True)
+        verbose_name='Certificate', max_length=200, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'MOOC Results'
