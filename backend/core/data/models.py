@@ -15,7 +15,7 @@ class StaffDetail(models.Model):
         ('NT', 'Non-Teaching'),
     ]
 
-    email = models.EmailField(null=True, blank=True, max_length=254, default=None, verbose_name='Email',
+    email = models.EmailField(primary_key=True, max_length=100, verbose_name='Email',
                               help_text='e.g. firstname.lastname@ljku.edu.in')
     first_name = models.CharField(max_length=20, verbose_name='First Name')
     middle_name = models.CharField(
@@ -43,7 +43,7 @@ class StaffDetail(models.Model):
         verbose_name = 'Staff Detail'
 
     def __str__(self):
-        return self.first_name + ' ' + self.middle_name + ' ' + self.last_name
+        return f'{self.first_name} {self.middle_name} {self.last_name}'
 
 
 class Weightage(models.Model):
@@ -76,8 +76,8 @@ class Weightage(models.Model):
         verbose_name='Marks Weightage', help_text='Marks weightage distribution.')
 
     class Meta:
-        verbose_name_plural = 'Weightages'
-        verbose_name = 'Weightage'
+        verbose_name_plural = 'Subject Weightages'
+        verbose_name = 'Subject Weightage'
 
     def __str__(self):
         subject = self.subject_set().first()
@@ -110,7 +110,7 @@ class Subject(models.Model):
         verbose_name = 'Subject'
 
     def __str__(self):
-        return self.subject_code + ' ' + self.subject_short_name
+        return f'{self.subject_code} {self.subject_short_name}'
 
 
 class Branch(models.Model):
@@ -128,7 +128,7 @@ class Branch(models.Model):
         verbose_name = 'Branch'
 
     def __str__(self):
-        return self.branch_code + ' ' + self.branch_short_name
+        return f'{self.branch_code} {self.branch_short_name}'
 
 
 class StudentDetail(models.Model):
@@ -165,7 +165,7 @@ class StudentDetail(models.Model):
         verbose_name = 'Student Detail'
 
     def __str__(self):
-        return self.enrolment_no
+        return f'{self.enrolment_no}'
 
 
 class FacultyAllocation(models.Model):
@@ -179,7 +179,7 @@ class FacultyAllocation(models.Model):
         verbose_name = 'Faculty Allocation'
 
     def __str__(self):
-        return self.faculty.email
+        return f'{self.faculty.email}'
 
 
 class Batch(models.Model):
@@ -196,7 +196,7 @@ class Batch(models.Model):
     def __str__(self):
         department = self.department_set().first()
         if department:
-            return f'{department.year}_{department.semester}_{department.department_name}_{self.name}'
+            return f'{department.year} {department.semester} {department.name} {self.name}'
         else:
             return f'{self.name}'
 
@@ -208,7 +208,7 @@ class StudyResource(models.Model):
     resource_type = models.CharField(
         max_length=50, verbose_name='Resource Type')
     upload_date = models.DateField(
-        verbose_name='Upload Date', help_text='dd/mm/yyyy')
+        verbose_name='Upload Date', auto_now=True, help_text='dd/mm/yyyy')
     file = models.FileField(
         verbose_name='Study Resource File', upload_to='study_resources/')
 
@@ -217,7 +217,7 @@ class StudyResource(models.Model):
         verbose_name = 'Study Resource'
 
     def __str__(self):
-        return self.subject.subject_short_name + ' ' + self.resource_type
+        return f'{self.subject.subject_short_name} {self.resource_type}'
 
 
 class Department(models.Model):
@@ -227,7 +227,7 @@ class Department(models.Model):
         verbose_name='Semester', help_text='e.g. 1')
     branch = models.ManyToManyField('Branch', verbose_name='Branch')
     batch = models.ManyToManyField('Batch', verbose_name='Batch')
-    department_name = models.CharField(
+    name = models.CharField(
         max_length=20, verbose_name='Department Name', help_text='e.g. CE_IT_2')
     hod = models.ForeignKey(
         'StaffDetail', verbose_name='Head of Department', on_delete=models.CASCADE)
@@ -239,7 +239,7 @@ class Department(models.Model):
         verbose_name = 'Department'
 
     def __str__(self):
-        return f'{self.year}_{self.semester}_{self.department_name}'
+        return f'{self.year} {self.semester} {self.name}'
 
 
 class Attendance(models.Model):
@@ -258,22 +258,24 @@ class Attendance(models.Model):
     class Meta:
         verbose_name_plural = 'Attendances'
         verbose_name = 'Attendance'
-        ordering = ['-date']  # Sort by date field in descending order (most recent first)
+        # Sort by date field in descending order (most recent first)
+        ordering = ['-date']
 
     def __str__(self):
         student_semester_record = self.studentsemesterrecord_set.first()
         if student_semester_record:
             department = student_semester_record.department
-            return f'{department.semester}_{department.department_name}_{self.subject_short_name} {self.date}'
+            return f'{department.semester} {department.name} {self.subject.subject_short_name} {self.date}'
         else:
-            return f'{self.subject_short_name} {self.date}'
+            return f'{self.subject.subject_short_name} {self.date}'
 
 
 class RemedialTestResult(models.Model):
     theory = models.FloatField(verbose_name='Theory', null=True, blank=True)
     individual_project = models.FloatField(
         verbose_name='Individual Project', null=True, blank=True)
-    group_project = models.FloatField(verbose_name='Group project', null=True, blank=True)
+    group_project = models.FloatField(
+        verbose_name='Group project', null=True, blank=True)
     ipe = models.FloatField(verbose_name='IPE', null=True, blank=True)
     other = models.FloatField(verbose_name='other', null=True, blank=True)
 
@@ -282,7 +284,7 @@ class RemedialTestResult(models.Model):
         verbose_name = 'Remedial Test Result'
 
     def __str__(self):
-        return 'Remedial Test Result ' + self.id
+        return f'Remedial Test Result {self.id}'
 
 
 class TestResult(models.Model):
@@ -307,7 +309,8 @@ class TestResult(models.Model):
 
     individual_project = models.FloatField(
         verbose_name='Individual Project', null=True, blank=True)
-    group_project = models.FloatField(verbose_name='Group Project', null=True, blank=True)
+    group_project = models.FloatField(
+        verbose_name='Group Project', null=True, blank=True)
     ipe = models.FloatField(
         verbose_name='IPE', null=True, blank=True, help_text='IPE Marks')
     other = models.FloatField(verbose_name='Other', null=True, blank=True)
@@ -321,7 +324,16 @@ class TestResult(models.Model):
         verbose_name = 'Test Result'
 
     def _str_(self):
-        return 'Test Result ' + self.subject
+        student_semester_record = self.studentsemesterrecord_set().first()
+        return_text = ''
+        if student_semester_record:
+            student = student_semester_record.student
+            return_text += f'{student.enrolment_no}'
+            department = student_semester_record.department.first()
+            if department:
+                return_text += f' {department.semester}'
+        return_text += f' {self.subject.subject_short_name}'
+        return return_text
 
 
 class MOOCCourses(models.Model):
@@ -336,13 +348,14 @@ class MOOCCourses(models.Model):
         verbose_name = 'MOOC Course'
 
     def _str_(self):
-        return self.course_name
+        return f'{self.course_name}'
 
 
 class MOOCResult(models.Model):
     course = models.ForeignKey(
         'MOOCCourses', verbose_name='MOOC Course', on_delete=models.CASCADE)
-    percentage = models.FloatField(verbose_name='Percentage', null=True, blank=True)
+    percentage = models.FloatField(
+        verbose_name='Percentage', null=True, blank=True)
     certificate = models.URLField(
         verbose_name='Certificate', max_length=200, null=True, blank=True)
 
@@ -351,7 +364,7 @@ class MOOCResult(models.Model):
         verbose_name = 'MOOC Result'
 
     def _str_(self):
-        return self.course.course_name
+        return f'{self.course.course_name}'
 
 
 class IndividualProject(models.Model):
@@ -368,11 +381,14 @@ class IndividualProject(models.Model):
         verbose_name = 'Individual Project'
 
     def _str_(self):
-        student = self.studentsemesterrecord_set().first()
-        if student:
-            return self.subject + '_' + student.roll_no
-        else:
-            return self.subject
+        student_semester_record = self.studentsemesterrecord_set().first()
+        return_text = self.subject.subject_short_name
+        if student_semester_record:
+            department = student_semester_record.department.first()
+            if department:
+                return_text = f'{department.year} {department.semester} {department.name} {self.subject.subject_short_name}'
+            return_text += f' {student_semester_record.roll_no}'
+        return return_text
 
 
 class GroupProject(models.Model):
@@ -389,10 +405,14 @@ class GroupProject(models.Model):
         verbose_name = 'Group Project'
 
     def _str_(self):
-        students = self.studentsemesterrecord_set()
-        return_text = self.subject
-        for i in students:
-            return_text = return_text + '_' + students.roll_no
+        student_semester_records = self.studentsemesterrecord_set()
+        return_text = self.subject.subject_short_name
+        if student_semester_records:
+            department = student_semester_records.first().department
+            if department:
+                return_text = f'{department.year} {department.semester} {department.name} {self.subject.subject_short_name}'
+            for student_semester_record in student_semester_records:
+                return_text += f' {student_semester_record.roll_no}'
         return return_text
 
 
@@ -401,12 +421,12 @@ class StudentSemesterRecord(models.Model):
         'StudentDetail', verbose_name='Student Details', on_delete=models.CASCADE)
     department = models.ForeignKey(
         'Department', verbose_name='Department', on_delete=models.CASCADE)
-    roll_no = models.IntegerField(verbose_name='Roll No')
+    roll_no = models.PositiveSmallIntegerField(verbose_name='Roll No')
     attendance = models.ManyToManyField(
         'Attendance', verbose_name='Attendance')
     test_result = models.ManyToManyField(
         'TestResult', verbose_name='Test Result'),
-    MOOCCourses = models.ManyToManyField(
+    MOOC_courses = models.ManyToManyField(
         'MOOCResult', verbose_name='MOOC Courses')
     individual_project = models.ManyToManyField(
         'IndividualProject', verbose_name='Individual Project')
@@ -418,4 +438,4 @@ class StudentSemesterRecord(models.Model):
         verbose_name = 'Student Semester Record'
 
     def _str_(self):
-        return self.student.enrolment_no
+        return f'{self.student.enrolment_no}'
