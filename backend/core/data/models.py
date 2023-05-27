@@ -32,7 +32,7 @@ class StaffDetail(models.Model):
             regex=r'^\+?\d{6,15}$',
             message='Mobile number must be in international format with no spaces or special characters.',
         ),
-    ], verbose_name='Mobile Number', help_text='e.g. +1234567890')
+    ], verbose_name='Mobile Number', help_text='e.g. +911234567890')
     category = models.CharField(
         max_length=2, choices=CATEGORY_CHOICES, verbose_name='Category')
     active = models.BooleanField(
@@ -80,7 +80,7 @@ class Weightage(models.Model):
         verbose_name = 'Subject Weightage'
 
     def __str__(self):
-        subject = self.subject_set().first()
+        subject = self.subject_set.first()
         if subject:
             return f'{subject.subject_short_name} {self.teaching_type} {self.category}'
         else:
@@ -194,7 +194,7 @@ class Batch(models.Model):
         verbose_name = 'Batch'
 
     def __str__(self):
-        department = self.department_set().first()
+        department = self.department_set.first()
         if department:
             return f'{department.year} {department.semester} {department.name} {self.name}'
         else:
@@ -324,7 +324,7 @@ class TestResult(models.Model):
         verbose_name = 'Test Result'
 
     def _str_(self):
-        student_semester_record = self.studentsemesterrecord_set().first()
+        student_semester_record = self.studentsemesterrecord_set.first()
         return_text = ''
         if student_semester_record:
             student = student_semester_record.student
@@ -381,7 +381,7 @@ class IndividualProject(models.Model):
         verbose_name = 'Individual Project'
 
     def _str_(self):
-        student_semester_record = self.studentsemesterrecord_set().first()
+        student_semester_record = self.studentsemesterrecord_set.first()
         return_text = self.subject.subject_short_name
         if student_semester_record:
             department = student_semester_record.department.first()
@@ -405,7 +405,7 @@ class GroupProject(models.Model):
         verbose_name = 'Group Project'
 
     def _str_(self):
-        student_semester_records = self.studentsemesterrecord_set()
+        student_semester_records = self.studentsemesterrecord_set
         return_text = self.subject.subject_short_name
         if student_semester_records:
             department = student_semester_records.first().department
