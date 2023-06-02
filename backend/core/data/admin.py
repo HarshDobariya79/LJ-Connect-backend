@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StaffDetail, Weightage, Subject, Branch, StudentDetail, FacultyAllocation, Batch, StudyResource, Department, Attendance, RemedialTestResult, TestResult, MOOCCourses, MOOCResult, IndividualProject, GroupProject, StudentSemesterRecord
+from .models import StaffDetail, Weightage, Subject, Branch, StudentDetail, FacultyAllocation, Batch, StudyResource, Department, Attendance, RemedialTestResult, TestResult, MOOCCourse, MOOCResult, IndividualProject, GroupProject, StudentSemesterRecord
 
 admin.site.register(StaffDetail)
 admin.site.register(Weightage)
@@ -13,7 +13,7 @@ admin.site.register(Department)
 admin.site.register(Attendance)
 admin.site.register(RemedialTestResult)
 admin.site.register(TestResult)
-admin.site.register(MOOCCourses)
+admin.site.register(MOOCCourse)
 admin.site.register(MOOCResult)
 admin.site.register(IndividualProject)
 admin.site.register(GroupProject)

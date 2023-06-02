@@ -306,7 +306,6 @@ class TestResult(models.Model):
         verbose_name='T3 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 3 Scanned Copy')
     T4_file = models.FileField(
         verbose_name='T4 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 4 Scanned Copy')
-
     individual_project = models.FloatField(
         verbose_name='Individual Project', null=True, blank=True)
     group_project = models.FloatField(
@@ -323,7 +322,7 @@ class TestResult(models.Model):
         verbose_name_plural = 'Test Results'
         verbose_name = 'Test Result'
 
-    def _str_(self):
+    def __str__(self):
         student_semester_record = self.studentsemesterrecord_set.first()
         return_text = ''
         if student_semester_record:
@@ -336,7 +335,7 @@ class TestResult(models.Model):
         return return_text
 
 
-class MOOCCourses(models.Model):
+class MOOCCourse(models.Model):
     course_name = models.CharField(max_length=100, verbose_name='Course')
     platform = models.CharField(
         max_length=30, verbose_name='Platform', help_text='e.g. Coursera')
@@ -347,13 +346,13 @@ class MOOCCourses(models.Model):
         verbose_name_plural = 'MOOC Courses'
         verbose_name = 'MOOC Course'
 
-    def _str_(self):
+    def __str__(self):
         return f'{self.course_name}'
 
 
 class MOOCResult(models.Model):
     course = models.ForeignKey(
-        'MOOCCourses', verbose_name='MOOC Course', on_delete=models.CASCADE)
+        'MOOCCourse', verbose_name='MOOC Course', on_delete=models.CASCADE)
     percentage = models.FloatField(
         verbose_name='Percentage', null=True, blank=True)
     certificate = models.URLField(
@@ -363,8 +362,17 @@ class MOOCResult(models.Model):
         verbose_name_plural = 'MOOC Results'
         verbose_name = 'MOOC Result'
 
-    def _str_(self):
-        return f'{self.course.course_name}'
+    def __str__(self):
+        student_semester_record = self.studentsemesterrecord_set.first()
+        return_text = ''
+        if student_semester_record:
+            student = student_semester_record.student
+            return_text += f'{student.enrolment_no}'
+            department = student_semester_record.department.first()
+            if department:
+                return_text += f' {department.semester}'
+        return_text += f' {self.course.course_name}'
+        return return_text
 
 
 class IndividualProject(models.Model):
@@ -380,7 +388,7 @@ class IndividualProject(models.Model):
         verbose_name_plural = 'Individual Projects'
         verbose_name = 'Individual Project'
 
-    def _str_(self):
+    def __str__(self):
         student_semester_record = self.studentsemesterrecord_set.first()
         return_text = self.subject.subject_short_name
         if student_semester_record:
@@ -404,7 +412,7 @@ class GroupProject(models.Model):
         verbose_name_plural = 'Group Projects'
         verbose_name = 'Group Project'
 
-    def _str_(self):
+    def __str__(self):
         student_semester_records = self.studentsemesterrecord_set
         return_text = self.subject.subject_short_name
         if student_semester_records:
@@ -425,7 +433,7 @@ class StudentSemesterRecord(models.Model):
     attendance = models.ManyToManyField(
         'Attendance', verbose_name='Attendance')
     test_result = models.ManyToManyField(
-        'TestResult', verbose_name='Test Result'),
+        'TestResult', verbose_name='Test Result')
     MOOC_courses = models.ManyToManyField(
         'MOOCResult', verbose_name='MOOC Courses')
     individual_project = models.ManyToManyField(
@@ -437,5 +445,5 @@ class StudentSemesterRecord(models.Model):
         verbose_name_plural = 'Student Semester Records'
         verbose_name = 'Student Semester Record'
 
-    def _str_(self):
+    def __str__(self):
         return f'{self.student.enrolment_no}'
