@@ -425,9 +425,9 @@ class GroupProject(models.Model):
         if student_semester_records:
             department = student_semester_records.first().department
             if department:
-                return_text = f'{department.year} SEM-{department.semester} {department.name} {self.subject.subject_short_name}'
+                return_text = f'{department.year} SEM-{department.semester} {department.name} {self.subject.subject_short_name} RollNo -'
             for student_semester_record in student_semester_records:
-                return_text += f' RollNo-{student_semester_record.roll_no}'
+                return_text += f' {student_semester_record.roll_no}'
         return return_text
 
 
@@ -453,4 +453,4 @@ class StudentSemesterRecord(models.Model):
         verbose_name = 'Student Semester Record'
 
     def __str__(self):
-        return f'{self.student.enrolment_no}'
+        return f'{self.student.enrolment_no} SEM-{self.department.semester}'
