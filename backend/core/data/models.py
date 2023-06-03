@@ -43,7 +43,13 @@ class StaffDetail(models.Model):
         verbose_name = 'Staff Detail'
 
     def __str__(self):
-        return f'{self.first_name} {self.middle_name} {self.last_name}'
+        if self.active:
+            if self.category == "T":
+                return f'{self.first_name} {self.middle_name} {self.last_name} 🟢'
+            elif self.category == "NT":
+                return f'{self.first_name} {self.middle_name} {self.last_name} 🟡'
+        else:
+            return f'{self.first_name} {self.middle_name} {self.last_name} 🔴'
 
 
 class Weightage(models.Model):
@@ -196,7 +202,7 @@ class Batch(models.Model):
     def __str__(self):
         department = self.department_set.first()
         if department:
-            return f'{department.year} {department.semester} {department.name} {self.name}'
+            return f'{department.year} SEM-{department.semester} {department.name} {self.name}'
         else:
             return f'{self.name}'
 
@@ -239,7 +245,7 @@ class Department(models.Model):
         verbose_name = 'Department'
 
     def __str__(self):
-        return f'{self.year} {self.semester} {self.name}'
+        return f'{self.year} SEM-{self.semester} {self.name}'
 
 
 class Attendance(models.Model):
@@ -265,7 +271,7 @@ class Attendance(models.Model):
         student_semester_record = self.studentsemesterrecord_set.first()
         if student_semester_record:
             department = student_semester_record.department
-            return f'{department.semester} {department.name} {self.subject.subject_short_name} {self.date}'
+            return f'SEM-{department.semester} {department.name} {self.subject.subject_short_name} {self.date}'
         else:
             return f'{self.subject.subject_short_name} {self.date}'
 
@@ -328,9 +334,9 @@ class TestResult(models.Model):
         if student_semester_record:
             student = student_semester_record.student
             return_text += f'{student.enrolment_no}'
-            department = student_semester_record.department.first()
+            department = student_semester_record.department
             if department:
-                return_text += f' {department.semester}'
+                return_text += f' SEM-{department.semester}'
         return_text += f' {self.subject.subject_short_name}'
         return return_text
 
@@ -368,9 +374,9 @@ class MOOCResult(models.Model):
         if student_semester_record:
             student = student_semester_record.student
             return_text += f'{student.enrolment_no}'
-            department = student_semester_record.department.first()
+            department = student_semester_record.department
             if department:
-                return_text += f' {department.semester}'
+                return_text += f' SEM-{department.semester}'
         return_text += f' {self.course.course_name}'
         return return_text
 
@@ -392,10 +398,10 @@ class IndividualProject(models.Model):
         student_semester_record = self.studentsemesterrecord_set.first()
         return_text = self.subject.subject_short_name
         if student_semester_record:
-            department = student_semester_record.department.first()
+            department = student_semester_record.department
             if department:
-                return_text = f'{department.year} {department.semester} {department.name} {self.subject.subject_short_name}'
-            return_text += f' {student_semester_record.roll_no}'
+                return_text = f'{department.year} SEM-{department.semester} {department.name} {self.subject.subject_short_name}'
+            return_text += f' RollNo-{student_semester_record.roll_no}'
         return return_text
 
 
@@ -413,14 +419,15 @@ class GroupProject(models.Model):
         verbose_name = 'Group Project'
 
     def __str__(self):
-        student_semester_records = self.studentsemesterrecord_set
+        student_semester_records = self.studentsemesterrecord_set.all()
         return_text = self.subject.subject_short_name
+        print(student_semester_records)
         if student_semester_records:
             department = student_semester_records.first().department
             if department:
-                return_text = f'{department.year} {department.semester} {department.name} {self.subject.subject_short_name}'
+                return_text = f'{department.year} SEM-{department.semester} {department.name} {self.subject.subject_short_name}'
             for student_semester_record in student_semester_records:
-                return_text += f' {student_semester_record.roll_no}'
+                return_text += f' RollNo-{student_semester_record.roll_no}'
         return return_text
 
 
