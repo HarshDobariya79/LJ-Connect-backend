@@ -271,7 +271,7 @@ class Attendance(models.Model):
         student_semester_record = self.studentsemesterrecord_set.first()
         if student_semester_record:
             department = student_semester_record.department
-            return f'SEM-{department.semester} {department.name} {self.subject.subject_short_name} {self.date}'
+            return f'SEM-{department.semester} {department.name} RollNo-{student_semester_record.roll_no} {self.subject.subject_short_name} {self.date}'
         else:
             return f'{self.subject.subject_short_name} {self.date}'
 
@@ -290,6 +290,11 @@ class RemedialTestResult(models.Model):
         verbose_name = 'Remedial Test Result'
 
     def __str__(self):
+        test_result = self.testresult_set.first()
+        if test_result:
+            student_semester_record = test_result.studentsemesterrecord_set.first()
+            return_text = f'{student_semester_record.student.enrolment_no} SEM-{student_semester_record.department.semester} {test_result.subject.subject_short_name}'
+            return return_text
         return f'Remedial Test Result {self.id}'
 
 
