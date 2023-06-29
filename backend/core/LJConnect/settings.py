@@ -131,8 +131,8 @@ SIMPLE_JWT = {
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': config('CLIENT_ID'),
-            'secret': config('SECRET_KEY'),
+            'client_id': config('GOOGLE_OAUTH2_CLIENT_ID'),
+            'secret': config('GOOGLE_OAUTH2_SECRET_KEY'),
         },
         'SCOPE': [
             'profile',
