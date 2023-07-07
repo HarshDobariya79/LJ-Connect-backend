@@ -22,7 +22,9 @@ endif
 setup:
 
 	@echo "$(GREEN_COLOR)===Installing pipenv===$(NC)"
-	@pip3 install pipenv
+	@pip3 install pipenv; \
+	cd ./backend; \
+	pipenv install;
 
 	@# Create .env file with content
 	@if [ ! -f ./backend/core/.env ]; then \
