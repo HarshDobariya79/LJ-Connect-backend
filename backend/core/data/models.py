@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.utils import timezone
 
 
 class StaffDetail(models.Model):
@@ -145,6 +146,7 @@ class StudentDetail(models.Model):
         ('O', 'Other'),
     ]
 
+    year_joined = timezone.now().year
     enrolment_no = models.CharField(
         max_length=16, primary_key=True, verbose_name='Enrolmentment No')
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email',
@@ -458,4 +460,4 @@ class StudentSemesterRecord(models.Model):
         verbose_name = 'Student Semester Record'
 
     def __str__(self):
-        return f'{self.student.enrolment_no} SEM-{self.department.semester}'
+        return f'{self.student.enrolment_no} SEM-{self.department.semester} {self.student.year_joined}'
