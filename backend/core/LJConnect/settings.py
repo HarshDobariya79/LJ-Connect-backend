@@ -112,6 +112,13 @@ MEDIA_URL = '/media/'
 DATE_INPUT_FORMATS = ["%d/%m/%Y"]
 USE_L10N = False
 
+# Rest framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+       'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
+    )
+}
+
 # dj-rest-auth
 REST_AUTH = {
     'SESSION_LOGIN': False,
@@ -122,9 +129,11 @@ REST_AUTH = {
 
 # simple-jwt configurations
 SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'BLACKLIST_AFTER_ROTATION': True,
+    'JWT_LEEWAY': timedelta(seconds=10),
 }
 
 # Social authentication settings

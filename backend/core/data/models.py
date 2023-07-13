@@ -165,6 +165,7 @@ class StudentDetail(models.Model):
     ], verbose_name='Mobile Number', help_text='e.g. +1234567890')
     branch = models.ForeignKey('Branch', verbose_name='Branch',
                                help_text='Branch details where student is enrolled.', on_delete=models.CASCADE)
+    graduated = models.BooleanField(default=False, verbose_name='Graduated', help_text='Is student already graduated?')
 
     class Meta:
         verbose_name_plural = 'Student Details'
