@@ -460,4 +460,4 @@ class StudentSemesterRecord(models.Model):
         verbose_name = 'Student Semester Record'
 
     def __str__(self):
-        return f'{self.student.enrolment_no} SEM-{self.department.semester} {self.student.year_joined}'
+        return f'{self.student.enrolment_no} SEM-{self.department.semester}'
