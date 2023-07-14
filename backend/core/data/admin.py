@@ -42,7 +42,6 @@ class BranchAdmin(admin.ModelAdmin):
 
 class StudentDetailAdmin(admin.ModelAdmin):
     search_fields = ['email', 'enrolment_no', 'first_name', 'last_name', 'year_joined']
-    search_fields = ['name', 'year', 'semester']
     def get_search_results(self, request, queryset, search_term):
         # Check if the search term matches a semester value
         if search_term.startswith('year_joined='):
@@ -102,7 +101,7 @@ class GroupProjectAdmin(RollNoSearch, admin.ModelAdmin):
     search_fields = ['subject__subject_code', 'subject__subject_short_name', 'studentsemesterrecord__roll_no']
    
 class StudentSemesterRecordAdmin(SemesterSearch, admin.ModelAdmin):
-    search_fields = ['student__enrolment_no', 'student__email', 'roll_no', 'department__semester']
+    search_fields = ['student__enrolment_no', 'student__email', 'roll_no', 'department__semester', 'department__batch__name']
     def get_search_results(self, request, queryset, search_term):
         # Check if the search term matches a semester value
         if search_term.startswith('RollNo='):
