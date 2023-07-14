@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
-
+from django.utils import timezone
 
 class StaffDetail(models.Model):
 
@@ -144,7 +144,7 @@ class StudentDetail(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-
+    year_joined = models.PositiveIntegerField(default = timezone.now().year, verbose_name = 'Year Joined')
     enrolment_no = models.CharField(
         max_length=16, primary_key=True, verbose_name='Enrolmentment No')
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email',
