@@ -23,7 +23,6 @@ setup:
 
 	@echo "$(GREEN_COLOR)===Installing pipenv===$(NC)"
 	@pip3 install pipenv; \
-	cd .; \
 	pipenv install;
 
 	@# Create .env file with content
@@ -55,7 +54,6 @@ clean:
 	
 	@echo "$(GREEN_COLOR)=== Cleaning up the environment ===$(NC)"
 	
-	@cd .; \
 	pipenv --rm;
 
 	@echo "$(GREEN_COLOR)Done cleaning$(NC)"
