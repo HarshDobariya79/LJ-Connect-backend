@@ -37,6 +37,7 @@ class StaffDetail(models.Model):
         max_length=2, choices=CATEGORY_CHOICES, verbose_name='Category')
     active = models.BooleanField(
         default=True, verbose_name='Active', help_text='Is the staff actively doing his/her job?')
+    permissions = models.JSONField(default=dict, verbose_name="Permissions", help_text="Permissions of the staff member", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Staff Details'
