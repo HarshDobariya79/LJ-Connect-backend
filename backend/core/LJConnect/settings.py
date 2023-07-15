@@ -26,15 +26,16 @@ INSTALLED_APPS = [
     'decouple',
 
     # Created apps
-    "data",
-    "authentication",
+    'data',
+    'authentication',
+    'api_gateway',
 
     # Social login
     'allauth.account',
     'rest_framework',
-    "allauth.socialaccount",
+    'allauth.socialaccount',
     'rest_framework.authtoken',
-    "allauth.socialaccount.providers.google",
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -109,7 +110,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # To set date format as dd/mm/yyyy
-DATE_INPUT_FORMATS = ["%d/%m/%Y"]
+DATE_INPUT_FORMATS = ['%d/%m/%Y']
 USE_L10N = False
 
 # Rest framework settings

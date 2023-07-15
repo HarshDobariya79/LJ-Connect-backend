@@ -234,7 +234,7 @@ class Department(models.Model):
     semester = models.PositiveSmallIntegerField(
         verbose_name='Semester', help_text='e.g. 1')
     branch = models.ManyToManyField('Branch', verbose_name='Branch')
-    batch = models.ManyToManyField('Batch', verbose_name='Batch')
+    batch = models.ManyToManyField('Batch', verbose_name='Batch', blank=True)
     name = models.CharField(
         max_length=20, verbose_name='Department Name', help_text='e.g. CE_IT_2')
     hod = models.ForeignKey(
