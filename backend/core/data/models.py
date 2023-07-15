@@ -240,7 +240,7 @@ class Department(models.Model):
     hod = models.ForeignKey(
         'StaffDetail', verbose_name='Head of Department', on_delete=models.CASCADE)
     study_resources = models.ManyToManyField(
-        'StudyResource', verbose_name='Study Resources')
+        'StudyResource', verbose_name='Study Resources', blank=True)
 
     class Meta:
         verbose_name_plural = 'Departments'
@@ -329,7 +329,7 @@ class TestResult(models.Model):
     bonus = models.FloatField(
         verbose_name='Bonus', null=True, blank=True, help_text='HOD Bonus, Attendance Bonus etc.')
     remedial_result = models.ManyToManyField(
-        'RemedialTestResult', verbose_name='Remedial Result')
+        'RemedialTestResult', verbose_name='Remedial Result', blank=True)
 
     class Meta:
         verbose_name_plural = 'Test Results'
@@ -449,11 +449,11 @@ class StudentSemesterRecord(models.Model):
     test_result = models.ManyToManyField(
         'TestResult', verbose_name='Test Result')
     MOOC_courses = models.ManyToManyField(
-        'MOOCResult', verbose_name='MOOC Courses')
+        'MOOCResult', verbose_name='MOOC Courses', blank=True)
     individual_project = models.ManyToManyField(
-        'IndividualProject', verbose_name='Individual Project')
+        'IndividualProject', verbose_name='Individual Project', blank=True)
     group_project = models.ManyToManyField(
-        'GroupProject', verbose_name='Group Project')
+        'GroupProject', verbose_name='Group Project', blank=True)
 
     class Meta:
         verbose_name_plural = 'Student Semester Records'
