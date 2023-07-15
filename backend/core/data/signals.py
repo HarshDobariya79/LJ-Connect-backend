@@ -22,7 +22,7 @@ def handle_department_modifications(sender, instance, action=None, **kwargs):
                 department = hod.permissions[instance.year][instance.semester][instance.name]
                 for batch, _ in department.items():
                     if(batch not in updated_batch_list):
-                        del department[batch]
+                        department[batch] = {}
                         
             else:
 
