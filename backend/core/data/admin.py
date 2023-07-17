@@ -101,7 +101,7 @@ class GroupProjectAdmin(RollNoSearch, admin.ModelAdmin):
     search_fields = ['subject__subject_code', 'subject__subject_short_name', 'studentsemesterrecord__roll_no']
    
 class StudentSemesterRecordAdmin(SemesterSearch, admin.ModelAdmin):
-    search_fields = ['student__enrolment_no', 'student__email', 'roll_no', 'department__semester', 'department__batch__name']
+    search_fields = ['student__enrolment_no', 'student__email', 'roll_no', 'department__semester', 'department__batch__name', 'department__branch__branch_short_name', 'department__year']
     def get_search_results(self, request, queryset, search_term):
         # Check if the search term matches a semester value
         if search_term.startswith('RollNo='):
