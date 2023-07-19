@@ -155,6 +155,7 @@ def handle_hod_updation(sender, instance, **kwargs): # handle deleting a departm
                     del staff.faculty.permissions[instance.year][instance.semester][instance.name][batch.name]
                     delete_empty_keys(staff.faculty.permissions)
                     staff.faculty.save()
+                batch.delete()
             delete_empty_keys(original_department.hod.permissions)
             original_department.hod.save()
     except Exception as e:
