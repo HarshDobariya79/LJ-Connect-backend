@@ -448,7 +448,7 @@ class StudentSemesterRecord(models.Model):
         'Attendance', verbose_name='Attendance')
     test_result = models.ManyToManyField(
         'TestResult', verbose_name='Test Result')
-    mooc_courses = models.ManyToManyField(
+    mooc_course = models.ManyToManyField(
         'MOOCResult', verbose_name='MOOC Courses', blank=True)
     individual_project = models.ManyToManyField(
         'IndividualProject', verbose_name='Individual Project', blank=True)
