@@ -231,10 +231,9 @@ class StudyResource(models.Model):
 class Department(models.Model):
     year = models.CharField(
         max_length=7, verbose_name='Year', help_text='e.g. 2022-23')
-    semester = models.PositiveSmallIntegerField(
-        verbose_name='Semester', help_text='e.g. 1')
+    semester = models.CharField(max_length=1, verbose_name='Semester', help_text='e.g. 1')
     branch = models.ManyToManyField('Branch', verbose_name='Branch')
-    batch = models.ManyToManyField('Batch', verbose_name='Batch')
+    batch = models.ManyToManyField('Batch', verbose_name='Batch', blank=True)
     name = models.CharField(
         max_length=20, verbose_name='Department Name', help_text='e.g. CE_IT_2')
     hod = models.ForeignKey(
