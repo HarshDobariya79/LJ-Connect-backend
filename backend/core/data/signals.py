@@ -140,7 +140,7 @@ def handle_department_modifications(sender, instance, action=None, reverse=None,
                 original_department.hod.save()
 
     except Exception as e:
-        print(action,'ERROR',e)
+        print(action,'WARNING',e)
 
 @receiver(pre_delete, sender=Department)
 def handle_hod_updation(sender, instance, **kwargs): # handle deleting a department
@@ -159,7 +159,7 @@ def handle_hod_updation(sender, instance, **kwargs): # handle deleting a departm
             delete_empty_keys(original_department.hod.permissions)
             original_department.hod.save()
     except Exception as e:
-        print('ERROR',e)
+        print('WARNING',e)
 
 
 # Batch model signals
@@ -216,7 +216,7 @@ def handle_batch_faculty_updation(sender, instance, action=None, reverse=None, m
                     staff.faculty.save()
 
     except Exception as e:
-        print(action,'ERROR',e)
+        print(action,'WARNING',e)
 
 
 @receiver(pre_delete, sender=Batch)
@@ -236,4 +236,4 @@ def handle_batch_delete(sender, instance, **kwargs):
                     staff.faculty.save()
 
     except Exception as e:
-        print('ERROR',e)
+        print('WARNING',e)
