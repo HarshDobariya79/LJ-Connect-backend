@@ -116,7 +116,7 @@ class Subject(models.Model):
         null=True, blank=True, verbose_name='Tutorial Credit', help_text='Tutorial credit of the subject.')
     practical_credit = models.PositiveSmallIntegerField(
         null=True, blank=True, verbose_name='Practical Credit', help_text='Practical credit of the subject.')
-    Weightage = models.ManyToManyField(
+    weightage = models.ManyToManyField(
         'Weightage', verbose_name='Weightage', help_text='Weightage distribution of the subject')
 
     class Meta:
@@ -312,21 +312,21 @@ class RemedialTestResult(models.Model):
 class TestResult(models.Model):
     subject = models.ForeignKey(
         'Subject', verbose_name='Subject', on_delete=models.CASCADE)
-    T1 = models.FloatField(verbose_name='T1', null=True, blank=True,
+    t1 = models.FloatField(verbose_name='T1', null=True, blank=True,
                            help_text='Test 1 Result')
-    T2 = models.FloatField(verbose_name='T2', null=True, blank=True,
+    t2 = models.FloatField(verbose_name='T2', null=True, blank=True,
                            help_text='Test 2 Result')
-    T3 = models.FloatField(verbose_name='T3', null=True, blank=True,
+    t3 = models.FloatField(verbose_name='T3', null=True, blank=True,
                            help_text='Test 3 Result')
-    T4 = models.FloatField(verbose_name='T4', null=True, blank=True,
+    t4 = models.FloatField(verbose_name='T4', null=True, blank=True,
                            help_text='Test 4 Result')
-    T1_file = models.FileField(
+    t1_file = models.FileField(
         verbose_name='T1 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 1 Scanned Copy')
-    T2_file = models.FileField(
+    t2_file = models.FileField(
         verbose_name='T2 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 2 Scanned Copy')
-    T3_file = models.FileField(
+    t3_file = models.FileField(
         verbose_name='T3 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 3 Scanned Copy')
-    T4_file = models.FileField(
+    t4_file = models.FileField(
         verbose_name='T4 Files', upload_to='test_files/', null=True, blank=True, help_text='Test 4 Scanned Copy')
     individual_project = models.FloatField(
         verbose_name='Individual Project', null=True, blank=True)
@@ -457,7 +457,7 @@ class StudentSemesterRecord(models.Model):
         'Attendance', verbose_name='Attendance')
     test_result = models.ManyToManyField(
         'TestResult', verbose_name='Test Result')
-    MOOC_courses = models.ManyToManyField(
+    mooc_course = models.ManyToManyField(
         'MOOCResult', verbose_name='MOOC Courses', blank=True)
     individual_project = models.ManyToManyField(
         'IndividualProject', verbose_name='Individual Project', blank=True)
