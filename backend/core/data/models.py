@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
+
 class StaffDetail(models.Model):
 
     GENDER_CHOICES = [
@@ -37,20 +38,26 @@ class StaffDetail(models.Model):
         max_length=2, choices=CATEGORY_CHOICES, verbose_name='Category')
     active = models.BooleanField(
         default=True, verbose_name='Active', help_text='Is the staff actively doing his/her job?')
-    permissions = models.JSONField(default=dict, verbose_name="Permissions", help_text="Permissions of the staff member", null=True, blank=True)
+    permissions = models.JSONField(default=dict, verbose_name="Permissions",
+                                   help_text="Permissions of the staff member", null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Staff Details'
         verbose_name = 'Staff Detail'
 
     def __str__(self):
+        if self.middle_name:
+            full_name = f'{self.first_name} {self.middle_name} {self.last_name} '
+        else:
+            full_name = f'{self.first_name} {self.last_name} '
         if self.active:
             if self.category == "T":
-                return f'{self.first_name} {self.middle_name} {self.last_name} 🟢'
+                full_name += '🟢'
             elif self.category == "NT":
-                return f'{self.first_name} {self.middle_name} {self.last_name} 🟡'
+                full_name += '🟡'
         else:
-            return f'{self.first_name} {self.middle_name} {self.last_name} 🔴'
+            full_name += '🔴'
+        return full_name
 
 
 class Weightage(models.Model):
@@ -145,7 +152,8 @@ class StudentDetail(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     ]
-    year_joined = models.PositiveIntegerField(default = timezone.now().year, verbose_name = 'Year Joined')
+    year_joined = models.PositiveIntegerField(
+        default=timezone.now().year, verbose_name='Year Joined')
     enrolment_no = models.CharField(
         max_length=16, primary_key=True, verbose_name='Enrolmentment No')
     email = models.EmailField(unique=True, max_length=30, verbose_name='Email',
@@ -166,7 +174,8 @@ class StudentDetail(models.Model):
     ], verbose_name='Mobile Number', help_text='e.g. +1234567890')
     branch = models.ForeignKey('Branch', verbose_name='Branch',
                                help_text='Branch details where student is enrolled.', on_delete=models.CASCADE)
-    graduated = models.BooleanField(default=False, verbose_name='Graduated', help_text='Is student already graduated?')
+    graduated = models.BooleanField(
+        default=False, verbose_name='Graduated', help_text='Is student already graduated?')
 
     class Meta:
         verbose_name_plural = 'Student Details'
@@ -231,7 +240,8 @@ class StudyResource(models.Model):
 class Department(models.Model):
     year = models.CharField(
         max_length=7, verbose_name='Year', help_text='e.g. 2022-23')
-    semester = models.CharField(max_length=1, verbose_name='Semester', help_text='e.g. 1')
+    semester = models.CharField(
+        max_length=1, verbose_name='Semester', help_text='e.g. 1')
     branch = models.ManyToManyField('Branch', verbose_name='Branch')
     batch = models.ManyToManyField('Batch', verbose_name='Batch', blank=True)
     name = models.CharField(
