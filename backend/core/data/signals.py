@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_save, post_save, pre_delete, post_delete, m2m_changed
 from django.dispatch import receiver
-from .models import Department, Batch
+from .models import *
 from django.core.serializers import serialize
 import json
 from .utils import delete_empty_keys
@@ -158,5 +158,82 @@ def handle_hod_updation(sender, instance, **kwargs): # handle deleting a departm
                 batch.delete()
             delete_empty_keys(original_department.hod.permissions)
             original_department.hod.save()
+    except Exception as e:
+        print('ERROR',e)
+
+
+# Batch model signals
+
+@receiver(m2m_changed, sender=Batch.faculty.through)
+def handle_batch_faculty_updation(sender, instance, action=None, reverse=None, model=None, pk_set=None, **kwargs):
+    try:
+        if action == "pre_add": # handle adding new faculty to a batch
+            added_faculties = FacultyAllocation.objects.filter(pk__in=pk_set)
+
+            batch = instance
+            
+            for department in instance.department_set.all():
+                hod = department.hod
+
+                permissions_format = {
+                    department.year: {
+                        department.semester: {
+                            department.name: {
+
+                            }
+                        }
+                    }
+                }
+
+                hod_permissions = deepcopy(permissions_format)
+                hod_permissions.update(hod.permissions)
+                hod_permissions[department.year][department.semester][department.name][batch.name] = deepcopy(HOD_PERMISSIONS)
+                hod.permissions.update(hod_permissions)
+                delete_empty_keys(hod.permissions)
+                hod.save()
+
+                for staff in added_faculties:
+                    if staff.faculty.email == hod.email:
+                        continue
+                    faculty_permissions = deepcopy(permissions_format)
+                    faculty_permissions.update(staff.faculty.permissions)
+                    faculty_permissions[department.year][department.semester][department.name][batch.name] = deepcopy(FACULTY_PERMISSIONS)
+                    staff.faculty.permissions.update(faculty_permissions)
+                    staff.faculty.save()
+
+        elif action == "pre_remove": # handle removing faculties from a batch
+            removed_faculties = FacultyAllocation.objects.filter(pk__in=pk_set)
+
+            for department in instance.department_set.all():
+                hod = department.hod
+                batch = instance
+
+                for staff in removed_faculties:
+                    if hod.email == staff.faculty.email:
+                        continue
+                    staff.faculty.permissions[department.year][department.semester][department.name][batch.name] = {}
+                    delete_empty_keys(staff.faculty.permissions)
+                    staff.faculty.save()
+
+    except Exception as e:
+        print(action,'ERROR',e)
+
+
+@receiver(pre_delete, sender=Batch)
+def handle_batch_delete(sender, instance, **kwargs):
+    try:
+        if instance.pk:
+            batch = Batch.objects.get(pk=instance.pk)
+            departments = batch.department_set.all()
+
+            for department in departments:
+                del department.hod.permissions[department.year][department.semester][department.name][batch.name]
+                delete_empty_keys(department.hod.permissions)
+                department.hod.save()
+                for staff in batch.faculty.all():
+                    del staff.faculty.permissions[department.year][department.semester][department.name][batch.name]
+                    delete_empty_keys(staff.faculty.permissions)
+                    staff.faculty.save()
+
     except Exception as e:
         print('ERROR',e)

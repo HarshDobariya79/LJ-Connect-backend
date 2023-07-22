@@ -193,9 +193,9 @@ class FacultyAllocation(models.Model):
 class Batch(models.Model):
     name = models.CharField(max_length=10, verbose_name='Batch Name')
     faculty = models.ManyToManyField(
-        'FacultyAllocation', verbose_name='Faculty', help_text='Faculty allocated to batch')
+        'FacultyAllocation', blank=True, verbose_name='Faculty', help_text='Faculty allocated to batch')
     student = models.ManyToManyField(
-        'StudentDetail', verbose_name='Student', help_text='Student allocated to batch')
+        'StudentDetail', blank=True, verbose_name='Student', help_text='Student allocated to batch')
 
     class Meta:
         verbose_name_plural = 'Batches'
