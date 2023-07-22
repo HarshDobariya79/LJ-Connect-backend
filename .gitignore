@@ -6,3 +6,5 @@ backend/env/
 
 # Django cache files
 *__pycache__
+
+.cache
