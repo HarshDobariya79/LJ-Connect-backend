@@ -196,7 +196,7 @@ class FacultyAllocation(models.Model):
         verbose_name = 'Faculty Allocation'
 
     def __str__(self):
-        return f'{self.faculty.email}'
+        return f'{self.faculty.email} {self.subject.subject_short_name}'
 
 
 class Batch(models.Model):
