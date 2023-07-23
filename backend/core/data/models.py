@@ -117,7 +117,7 @@ class Subject(models.Model):
     practical_credit = models.PositiveSmallIntegerField(
         null=True, blank=True, verbose_name='Practical Credit', help_text='Practical credit of the subject.')
     weightage = models.ManyToManyField(
-        'Weightage', verbose_name='Weightage', help_text='Weightage distribution of the subject')
+        'Weightage', blank=True, verbose_name='Weightage', help_text='Weightage distribution of the subject')
 
     class Meta:
         verbose_name_plural = 'Subjects'
