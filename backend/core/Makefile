@@ -25,6 +25,10 @@ setup:
 	@pip3 install pipenv; \
 	pipenv install;
 
+	@echo "$(GREEN_COLOR)=== Installing pre-commit ===$(NC)"
+	@pipenv run pip install pre-commit
+	@pipenv run pre-commit install
+
 	@# Create .env file with content
 	@if [ ! -f .env ]; then \
 		echo "$(GREEN_COLOR).env file not found. Generating one...$(NC)"; \
@@ -51,9 +55,9 @@ setup:
 
 # Deactivate and clean up the virtual environment.
 clean:
-	
+
 	@echo "$(GREEN_COLOR)=== Cleaning up the environment ===$(NC)"
-	
+
 	pipenv --rm;
 
 	@echo "$(GREEN_COLOR)Done cleaning$(NC)"
