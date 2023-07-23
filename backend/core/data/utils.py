@@ -1,5 +1,6 @@
 import json
 
+
 def delete_empty_keys(data):
     if isinstance(data, dict):
         for key in list(data.keys()):
