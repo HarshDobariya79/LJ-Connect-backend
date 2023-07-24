@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 
-from .models import Department  # Import specific names
+from .models import Department
 from .models import Batch, FacultyAllocation, StaffDetail, StudentDetail
 
 
