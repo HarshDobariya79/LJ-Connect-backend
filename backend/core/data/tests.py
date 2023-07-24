@@ -2,8 +2,8 @@ import json
 
 from django.test import TestCase
 
-from .models import Department
-from .models import Batch, FacultyAllocation, StaffDetail, StudentDetail
+from .models import (Batch, Department, FacultyAllocation, StaffDetail,
+                     StudentDetail)
 
 
 class PermissionAutomationTestCase(TestCase):
