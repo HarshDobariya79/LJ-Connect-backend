@@ -250,7 +250,7 @@ class StudentDetail(models.Model):
         verbose_name = "Student Detail"
 
     def __str__(self):
-        return f"{self.enrolment_no}"
+        return f"{self.first_name} {self.last_name} {self.enrolment_no}"
 
 
 class FacultyAllocation(models.Model):
