@@ -354,6 +354,7 @@ class Attendance(models.Model):
     subject = models.ForeignKey(
         "Subject", verbose_name="Subject", on_delete=models.CASCADE
     )
+    lecture_no = models.CharField(max_length=1, verbose_name="Lecture No.")
     mode = models.CharField(
         max_length=5, choices=RESOURCE_TYPE_CHOICES, default="R", verbose_name="Mode"
     )
