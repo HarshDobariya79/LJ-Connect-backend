@@ -361,6 +361,12 @@ class Attendance(models.Model):
     present = models.BooleanField(
         verbose_name="Present", help_text="If student is present or not."
     )
+    create_timestamp = models.DateTimeField(
+        verbose_name="Create Timestamp", auto_now_add=True
+    )
+    update_timestamp = models.DateTimeField(
+        verbose_name="Update Timestamp", auto_now=True
+    )
 
     class Meta:
         verbose_name_plural = "Attendances"
@@ -387,6 +393,12 @@ class RemedialTestResult(models.Model):
     )
     ipe = models.FloatField(verbose_name="IPE", null=True, blank=True)
     other = models.FloatField(verbose_name="other", null=True, blank=True)
+    create_timestamp = models.DateTimeField(
+        verbose_name="Create Timestamp", auto_now_add=True
+    )
+    update_timestamp = models.DateTimeField(
+        verbose_name="Update Timestamp", auto_now=True
+    )
 
     class Meta:
         verbose_name_plural = "Remedial Test Results"
@@ -464,6 +476,12 @@ class TestResult(models.Model):
     remedial_result = models.ManyToManyField(
         "RemedialTestResult", verbose_name="Remedial Result", blank=True
     )
+    create_timestamp = models.DateTimeField(
+        verbose_name="Create Timestamp", auto_now_add=True
+    )
+    update_timestamp = models.DateTimeField(
+        verbose_name="Update Timestamp", auto_now=True
+    )
 
     class Meta:
         verbose_name_plural = "Test Results"
@@ -504,6 +522,12 @@ class MOOCResult(models.Model):
     percentage = models.FloatField(verbose_name="Percentage", null=True, blank=True)
     certificate = models.URLField(
         verbose_name="Certificate", max_length=200, null=True, blank=True
+    )
+    create_timestamp = models.DateTimeField(
+        verbose_name="Create Timestamp", auto_now_add=True
+    )
+    update_timestamp = models.DateTimeField(
+        verbose_name="Update Timestamp", auto_now=True
     )
 
     class Meta:
@@ -569,7 +593,6 @@ class GroupProject(models.Model):
     def __str__(self):
         student_semester_records = self.studentsemesterrecord_set.all()
         return_text = self.subject.subject_short_name
-        print(student_semester_records)
         if student_semester_records:
             department = student_semester_records.first().department
             if department:
@@ -597,6 +620,12 @@ class StudentSemesterRecord(models.Model):
     )
     group_project = models.ManyToManyField(
         "GroupProject", verbose_name="Group Project", blank=True
+    )
+    create_timestamp = models.DateTimeField(
+        verbose_name="Create Timestamp", auto_now_add=True
+    )
+    update_timestamp = models.DateTimeField(
+        verbose_name="Update Timestamp", auto_now=True
     )
 
     class Meta:
