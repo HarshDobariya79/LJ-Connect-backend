@@ -610,8 +610,12 @@ class StudentSemesterRecord(models.Model):
         "Department", verbose_name="Department", on_delete=models.CASCADE
     )
     roll_no = models.PositiveSmallIntegerField(verbose_name="Roll No")
-    attendance = models.ManyToManyField("Attendance", verbose_name="Attendance")
-    test_result = models.ManyToManyField("TestResult", verbose_name="Test Result")
+    attendance = models.ManyToManyField(
+        "Attendance", blank=True, verbose_name="Attendance"
+    )
+    test_result = models.ManyToManyField(
+        "TestResult", blank=True, verbose_name="Test Result"
+    )
     mooc_course = models.ManyToManyField(
         "MOOCResult", verbose_name="MOOC Courses", blank=True
     )
