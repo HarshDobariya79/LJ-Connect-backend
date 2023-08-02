@@ -1,0 +1,32 @@
+[
+    {
+        "model": "data.weightage",
+        "pk": 1,
+        "fields": {
+            "teaching_type": "T",
+            "category": "MCQ",
+            "percentage_weightage": 23,
+            "marks_weightage": 13
+        }
+    },
+    {
+        "model": "data.weightage",
+        "pk": 2,
+        "fields": {
+            "teaching_type": "P",
+            "category": "IPE",
+            "percentage_weightage": 50,
+            "marks_weightage": 50
+        }
+    },
+    {
+        "model": "data.weightage",
+        "pk": 3,
+        "fields": {
+            "teaching_type": "T",
+            "category": "THEORY_DESC",
+            "percentage_weightage": 25,
+            "marks_weightage": 15
+        }
+    }
+]

@@ -1,0 +1,20 @@
+[
+    {
+        "model": "data.branch",
+        "pk": "2334455667",
+        "fields": {
+            "branch_short_name": "CE",
+            "branch_full_name": "Computer Engineering",
+            "available": true
+        }
+    },
+    {
+        "model": "data.branch",
+        "pk": "2654862341",
+        "fields": {
+            "branch_short_name": "CSE",
+            "branch_full_name": "Computer Science and Engineering",
+            "available": true
+        }
+    }
+]

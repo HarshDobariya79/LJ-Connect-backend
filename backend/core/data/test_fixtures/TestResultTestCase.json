@@ -1,0 +1,50 @@
+[
+    {
+        "model": "data.testresult",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "t1": 12.0,
+            "t2": 12.0,
+            "t3": 9.0,
+            "t4": 10.0,
+            "t1_file": "",
+            "t2_file": "",
+            "t3_file": "",
+            "t4_file": "",
+            "individual_project": null,
+            "group_project": null,
+            "ipe": null,
+            "other": null,
+            "bonus": null,
+            "remedial_result": [
+                1
+            ],
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    },
+    {
+        "model": "data.testresult",
+        "pk": 2,
+        "fields": {
+            "subject": "26541254",
+            "t1": 75.0,
+            "t2": 65.0,
+            "t3": 84.0,
+            "t4": 80.0,
+            "t1_file": "",
+            "t2_file": "",
+            "t3_file": "",
+            "t4_file": "",
+            "individual_project": null,
+            "group_project": null,
+            "ipe": null,
+            "other": null,
+            "bonus": null,
+            "remedial_result": [],
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    }
+]

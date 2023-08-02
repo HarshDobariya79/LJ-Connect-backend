@@ -1,0 +1,12 @@
+[
+    {
+        "model": "data.groupproject",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "definition": "group project1",
+            "create_timestamp": "2023-07-24T04:17:36.816Z",
+            "update_timestamp": "2023-07-24T04:17:36.816Z"
+        }
+    }
+]

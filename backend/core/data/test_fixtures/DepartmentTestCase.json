@@ -1,0 +1,20 @@
+[
+    {
+        "model": "data.department",
+        "pk": 1,
+        "fields": {
+            "year": "2024-25",
+            "semester": "5",
+            "name": "DEPT_1",
+            "hod": "staff3@ljku.edu.in",
+            "branch": [
+                "2654862341"
+            ],
+            "batch": [
+                1,
+                2
+            ],
+            "study_resource": []
+        }
+    }
+]

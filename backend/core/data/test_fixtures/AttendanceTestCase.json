@@ -1,0 +1,28 @@
+[
+    {
+        "model": "data.attendance",
+        "pk": 1,
+        "fields": {
+            "date": "2023-07-24",
+            "subject": "12546525",
+            "lecture_no": "1",
+            "mode": "PRX",
+            "present": true,
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    },
+    {
+        "model": "data.attendance",
+        "pk": 2,
+        "fields": {
+            "date": "2023-07-25",
+            "subject": "26541254",
+            "lecture_no": "2",
+            "mode": "R",
+            "present": false,
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    }
+]

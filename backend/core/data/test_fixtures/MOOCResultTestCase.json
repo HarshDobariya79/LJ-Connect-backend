@@ -1,0 +1,13 @@
+[
+    {
+        "model": "data.moocresult",
+        "pk": 1,
+        "fields": {
+            "course": 1,
+            "percentage": 80.0,
+            "certificate": null,
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    }
+]

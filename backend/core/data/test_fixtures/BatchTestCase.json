@@ -1,0 +1,28 @@
+[
+    {
+        "model": "data.batch",
+        "pk": 1,
+        "fields": {
+            "name": "B1",
+            "faculty": [
+                1
+            ],
+            "student": [
+                "25468521265"
+            ]
+        }
+    },
+    {
+        "model": "data.batch",
+        "pk": 2,
+        "fields": {
+            "name": "B2",
+            "faculty": [
+                2
+            ],
+            "student": [
+                "25468521266"
+            ]
+        }
+    }
+]

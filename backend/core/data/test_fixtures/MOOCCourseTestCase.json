@@ -1,0 +1,11 @@
+[
+    {
+        "model": "data.mooccourse",
+        "pk": 1,
+        "fields": {
+            "course_name": "MOOC Course1",
+            "platform": "platform1",
+            "university": "university1"
+        }
+    }
+]
