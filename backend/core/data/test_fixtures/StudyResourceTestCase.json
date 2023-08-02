@@ -1,0 +1,13 @@
+[
+    {
+        "model": "data.studyresource",
+        "pk": 2,
+        "fields": {
+            "subject": "26541254",
+            "name": "resource_name",
+            "resource_type": "QB",
+            "upload_date": "2023-07-25",
+            "file": "study_resources/b.pdf"
+        }
+    }
+]

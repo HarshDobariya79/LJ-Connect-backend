@@ -173,6 +173,52 @@
         }
     },
     {
+        "model": "data.staffdetail",
+        "pk": "staff4@ljku.edu.in",
+        "fields": {
+            "first_name": "fname4",
+            "middle_name": null,
+            "last_name": "lname4",
+            "short_name": "fml4",
+            "gender": "F",
+            "birth_date": "1989-07-24",
+            "mobile_number": "1234567891",
+            "category": "T",
+            "active": true,
+            "permissions": {}
+        }
+    },
+    {
+        "model": "data.weightage",
+        "pk": 1,
+        "fields": {
+            "teaching_type": "T",
+            "category": "MCQ",
+            "percentage_weightage": 23,
+            "marks_weightage": 13
+        }
+    },
+    {
+        "model": "data.weightage",
+        "pk": 2,
+        "fields": {
+            "teaching_type": "P",
+            "category": "IPE",
+            "percentage_weightage": 50,
+            "marks_weightage": 50
+        }
+    },
+    {
+        "model": "data.weightage",
+        "pk": 3,
+        "fields": {
+            "teaching_type": "T",
+            "category": "THEORY_DESC",
+            "percentage_weightage": 25,
+            "marks_weightage": 15
+        }
+    },
+    {
         "model": "data.subject",
         "pk": "12546525",
         "fields": {
@@ -187,6 +233,19 @@
     },
     {
         "model": "data.subject",
+        "pk": "23344556",
+        "fields": {
+            "subject_short_name": "DM",
+            "subject_full_name": "Descrete Mathematics",
+            "total_credit": 5,
+            "theory_credit": 3,
+            "tutorial_credit": 2,
+            "practical_credit": null,
+            "weightage": []
+        }
+    },
+    {
+        "model": "data.subject",
         "pk": "26541254",
         "fields": {
             "subject_short_name": "FSD-2",
@@ -196,6 +255,15 @@
             "tutorial_credit": 0,
             "practical_credit": 2,
             "weightage": []
+        }
+    },
+    {
+        "model": "data.branch",
+        "pk": "2334455667",
+        "fields": {
+            "branch_short_name": "CE",
+            "branch_full_name": "Computer Engineering",
+            "available": true
         }
     },
     {
@@ -235,6 +303,22 @@
             "gender": "F",
             "birth_date": "2003-11-16",
             "mobile_number": "+911234567895",
+            "branch": "2654862341",
+            "graduated": false
+        }
+    },
+    {
+        "model": "data.studentdetail",
+        "pk": "25468521267",
+        "fields": {
+            "year_joined": 2023,
+            "email": "student3@ljku.edu.in",
+            "first_name": "sfname3",
+            "middle_name": null,
+            "last_name": "slname3",
+            "gender": "F",
+            "birth_date": "2002-11-20",
+            "mobile_number": "1234567891",
             "branch": "2654862341",
             "graduated": false
         }
@@ -290,6 +374,17 @@
         }
     },
     {
+        "model": "data.studyresource",
+        "pk": 2,
+        "fields": {
+            "subject": "26541254",
+            "name": "resource_name",
+            "resource_type": "QB",
+            "upload_date": "2023-07-25",
+            "file": "study_resources/QB_FSD-2_SEM-IV_CH-5_final.pdf"
+        }
+    },
+    {
         "model": "data.department",
         "pk": 1,
         "fields": {
@@ -304,7 +399,176 @@
                 1,
                 2
             ],
-            "study_resource": []
+            "study_resources": []
+        }
+    },
+    {
+        "model": "data.attendance",
+        "pk": 1,
+        "fields": {
+            "date": "2023-07-24",
+            "subject": "12546525",
+            "mode": "PRX",
+            "present": true
+        }
+    },
+    {
+        "model": "data.attendance",
+        "pk": 2,
+        "fields": {
+            "date": "2023-07-25",
+            "subject": "26541254",
+            "mode": "R",
+            "present": false
+        }
+    },
+    {
+        "model": "data.remedialtestresult",
+        "pk": 1,
+        "fields": {
+            "theory": 36.0,
+            "individual_project": null,
+            "group_project": null,
+            "ipe": null,
+            "other": null
+        }
+    },
+    {
+        "model": "data.testresult",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "t1": 12.0,
+            "t2": 12.0,
+            "t3": 9.0,
+            "t4": 10.0,
+            "t1_file": "",
+            "t2_file": "",
+            "t3_file": "",
+            "t4_file": "",
+            "individual_project": null,
+            "group_project": null,
+            "ipe": null,
+            "other": null,
+            "bonus": null,
+            "remedial_result": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "data.testresult",
+        "pk": 2,
+        "fields": {
+            "subject": "26541254",
+            "t1": 75.0,
+            "t2": 65.0,
+            "t3": 84.0,
+            "t4": 80.0,
+            "t1_file": "",
+            "t2_file": "",
+            "t3_file": "",
+            "t4_file": "",
+            "individual_project": null,
+            "group_project": null,
+            "ipe": null,
+            "other": null,
+            "bonus": null,
+            "remedial_result": []
+        }
+    },
+    {
+        "model": "data.mooccourse",
+        "pk": 1,
+        "fields": {
+            "course_name": "MOOC Course1",
+            "platform": "platform1",
+            "university": "university1"
+        }
+    },
+    {
+        "model": "data.moocresult",
+        "pk": 1,
+        "fields": {
+            "course": 1,
+            "percentage": 80.0,
+            "certificate": null
+        }
+    },
+    {
+        "model": "data.individualproject",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "definition": "FCSP-2 individual project1",
+            "create_timestamp": "2023-07-24T04:17:55.292Z",
+            "update_timestamp": "2023-07-24T04:18:43.889Z"
+        }
+    },
+    {
+        "model": "data.individualproject",
+        "pk": 2,
+        "fields": {
+            "subject": "12546525",
+            "definition": "FCSP-2 individual project2",
+            "create_timestamp": "2023-07-24T04:18:07.062Z",
+            "update_timestamp": "2023-07-24T04:18:32.412Z"
+        }
+    },
+    {
+        "model": "data.groupproject",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "definition": "group project1",
+            "create_timestamp": "2023-07-24T04:17:36.816Z",
+            "update_timestamp": "2023-07-24T04:17:36.816Z"
+        }
+    },
+    {
+        "model": "data.studentsemesterrecord",
+        "pk": 1,
+        "fields": {
+            "student": "25468521265",
+            "department": 1,
+            "roll_no": 14,
+            "attendance": [
+                2
+            ],
+            "test_result": [
+                1
+            ],
+            "mooc_course": [
+                1
+            ],
+            "individual_project": [
+                2
+            ],
+            "group_project": [
+                1
+            ]
+        }
+    },
+    {
+        "model": "data.studentsemesterrecord",
+        "pk": 2,
+        "fields": {
+            "student": "25468521266",
+            "department": 1,
+            "roll_no": 17,
+            "attendance": [
+                1
+            ],
+            "test_result": [
+                2
+            ],
+            "mooc_course": [],
+            "individual_project": [
+                1
+            ],
+            "group_project": [
+                1
+            ]
         }
     }
 ]

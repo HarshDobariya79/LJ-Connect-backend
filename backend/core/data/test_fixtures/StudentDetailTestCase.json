@@ -1,0 +1,50 @@
+[
+    {
+        "model": "data.studentdetail",
+        "pk": "25468521265",
+        "fields": {
+            "year_joined": 2023,
+            "email": "student1@ljku.edu.in",
+            "first_name": "sfname1",
+            "middle_name": null,
+            "last_name": "slname1",
+            "gender": "M",
+            "birth_date": "2003-11-16",
+            "mobile_number": "+911234567894",
+            "branch": "2654862341",
+            "graduated": false
+        }
+    },
+    {
+        "model": "data.studentdetail",
+        "pk": "25468521266",
+        "fields": {
+            "year_joined": 2023,
+            "email": "student2@ljku.edu.in",
+            "first_name": "sfname2",
+            "middle_name": null,
+            "last_name": "slname2",
+            "gender": "F",
+            "birth_date": "2003-11-16",
+            "mobile_number": "+911234567895",
+            "branch": "2654862341",
+            "graduated": false
+        }
+    },
+    {
+        "model": "data.studentdetail",
+        "pk": "25468521267",
+        "fields": {
+            "year_joined": 2023,
+            "email": "student3@ljku.edu.in",
+            "first_name": "sfname3",
+            "middle_name": null,
+            "last_name": "slname3",
+            "gender": "F",
+            "birth_date": "2002-11-20",
+            "mobile_number": "1234567891",
+            "branch": "2654862341",
+            "graduated": false
+        }
+    }
+]

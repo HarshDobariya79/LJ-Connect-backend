@@ -1,0 +1,41 @@
+[
+    {
+        "model": "data.subject",
+        "pk": "12546525",
+        "fields": {
+            "subject_short_name": "FCSP-2",
+            "subject_full_name": "Fundamental of Computer Science using Python-2",
+            "total_credit": 5,
+            "theory_credit": 3,
+            "tutorial_credit": 0,
+            "practical_credit": 2,
+            "weightage": []
+        }
+    },
+    {
+        "model": "data.subject",
+        "pk": "23344556",
+        "fields": {
+            "subject_short_name": "DM",
+            "subject_full_name": "Descrete Mathematics",
+            "total_credit": 5,
+            "theory_credit": 3,
+            "tutorial_credit": 2,
+            "practical_credit": null,
+            "weightage": []
+        }
+    },
+    {
+        "model": "data.subject",
+        "pk": "26541254",
+        "fields": {
+            "subject_short_name": "FSD-2",
+            "subject_full_name": "Full Stack Development 2",
+            "total_credit": 5,
+            "theory_credit": 3,
+            "tutorial_credit": 0,
+            "practical_credit": 2,
+            "weightage": []
+        }
+    }
+]

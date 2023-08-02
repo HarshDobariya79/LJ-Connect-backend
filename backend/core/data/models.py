@@ -336,7 +336,7 @@ class Department(models.Model):
     hod = models.ForeignKey(
         "StaffDetail", verbose_name="Head of Department", on_delete=models.CASCADE
     )
-    study_resources = models.ManyToManyField(
+    study_resource = models.ManyToManyField(
         "StudyResource", verbose_name="Study Resources", blank=True
     )
 

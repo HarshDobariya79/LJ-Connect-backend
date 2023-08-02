@@ -1,0 +1,50 @@
+[
+    {
+        "model": "data.studentsemesterrecord",
+        "pk": 1,
+        "fields": {
+            "student": "25468521265",
+            "department": 1,
+            "roll_no": 14,
+            "attendance": [
+                2
+            ],
+            "test_result": [
+                1
+            ],
+            "mooc_course": [
+                1
+            ],
+            "individual_project": [
+                2
+            ],
+            "group_project": [
+                1
+            ],
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    },
+    {
+        "model": "data.studentsemesterrecord",
+        "pk": 2,
+        "fields": {
+            "student": "25468521266",
+            "department": 1,
+            "roll_no": 17,
+            "attendance": [
+                1
+            ],
+            "test_result": [
+                2
+            ],
+            "mooc_course": [],
+            "individual_project": [1],
+            "group_project": [
+                1
+            ],
+            "create_timestamp": "2023-07-31T10:35:29.758498",
+            "update_timestamp": "2023-07-31T19:42:08.740670"
+        }
+    }
+]

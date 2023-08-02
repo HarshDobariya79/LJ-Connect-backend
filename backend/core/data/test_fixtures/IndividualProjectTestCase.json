@@ -1,0 +1,22 @@
+[
+    {
+        "model": "data.individualproject",
+        "pk": 1,
+        "fields": {
+            "subject": "12546525",
+            "definition": "FCSP-2 individual project1",
+            "create_timestamp": "2023-07-24T04:17:55.292Z",
+            "update_timestamp": "2023-07-24T04:18:43.889Z"
+        }
+    },
+    {
+        "model": "data.individualproject",
+        "pk": 2,
+        "fields": {
+            "subject": "12546525",
+            "definition": "FCSP-2 individual project2",
+            "create_timestamp": "2023-07-24T04:18:07.062Z",
+            "update_timestamp": "2023-07-24T04:18:32.412Z"
+        }
+    }
+]
