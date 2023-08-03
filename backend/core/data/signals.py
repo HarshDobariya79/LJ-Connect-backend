@@ -24,124 +24,171 @@ FACULTY_PERMISSIONS = {
 }
 
 
-# Department model signals
+def permission_assignment_from_batches(instance, batches):
+    try:
+        hod = instance.hod
+
+        permissions_format = {instance.year: {instance.semester: {instance.name: {}}}}
+
+        hod_permissions = deepcopy(permissions_format)
+        hod_permissions.update(hod.permissions)
+
+        for batch in batches:
+            hod_permissions[instance.year][instance.semester][instance.name][
+                batch.name
+            ] = deepcopy(HOD_PERMISSIONS)
+            for staff in batch.faculty.all():
+                if staff.faculty.email == hod.email:
+                    continue
+                faculty_permissions = deepcopy(permissions_format)
+                faculty_permissions.update(staff.faculty.permissions)
+                faculty_permissions[instance.year][instance.semester][instance.name][
+                    batch.name
+                ] = deepcopy(FACULTY_PERMISSIONS)
+                staff.faculty.permissions.update(faculty_permissions)
+                staff.faculty.save()
+        hod.permissions.update(hod_permissions)
+        delete_empty_keys(hod.permissions)
+        hod.save()
+    except Exception as e:
+        pass
+        # print(f"permission assignment from batches {e}")
+
+
+def permission_assignment_from_department(instance):
+    try:
+        batches = instance.batch.all()
+        permission_assignment_from_batches(instance, batches)
+    except Exception as e:
+        pass
+        # print(f"permission assignment from department {e}")
+
+
+def permission_revocation_from_batches(instance, batches):
+    try:
+        hod = instance.hod
+
+        for batch in batches:
+            del hod.permissions[instance.year][instance.semester][instance.name][
+                batch.name
+            ]
+            delete_empty_keys(hod.permissions)
+        hod.save()
+
+        for batch in batches:
+            for staff in batch.faculty.all():
+                if staff.faculty.email == hod.email:
+                    continue
+                del staff.faculty.permissions[instance.year][instance.semester][
+                    instance.name
+                ][batch.name]
+                delete_empty_keys(staff.faculty.permissions)
+                staff.faculty.save()
+    except Exception as e:
+        pass
+        # print(f"permission revocation from batches {e}")
+
+
+def permission_revocation_from_department(instance):
+    try:
+        hod = instance.hod
+        del hod.permissions[instance.year][instance.semester][instance.name]
+        delete_empty_keys(hod.permissions)
+        hod.save()
+
+        for batch in instance.batch.all():
+            for staff in batch.faculty.all():
+                try:
+                    del staff.faculty.permissions[instance.year][instance.semester][
+                        instance.name
+                    ]
+                except Exception as e:
+                    pass
+                delete_empty_keys(staff.faculty.permissions)
+                staff.faculty.save()
+
+    except Exception as e:
+        pass
+        # print(f"permission revocation from department {e}")
+
+
+def hod_permission_transfer(instance):
+    try:
+        if instance.pk:
+            original_department = Department.objects.get(pk=instance.pk)
+            old_hod_permissions = original_department.hod.permissions
+
+            for batch in original_department.batch.all():
+                isHod = False
+                for staff in batch.faculty.all():
+                    if staff.faculty.email == original_department.hod.email:
+                        isHod = True
+                if isHod:
+                    old_hod_permissions[instance.year][instance.semester][
+                        instance.name
+                    ][batch.name] = FACULTY_PERMISSIONS
+                else:
+                    del old_hod_permissions[instance.year][instance.semester][
+                        instance.name
+                    ][batch.name]
+            delete_empty_keys(original_department.hod.permissions)
+            original_department.hod.save()
+    except Exception as e:
+        pass
+        # print(f"hod permission transfer {e}")
+
+
+@receiver(m2m_changed, sender=Department.batch.through)
+def m2m_changed_handler(sender, instance, action, reverse, model, pk_set, **kwargs):
+    try:
+        if action == "post_add":
+            batches = Batch.objects.filter(pk__in=pk_set)
+            permission_assignment_from_batches(instance, batches)
+
+        elif action == "post_remove":
+            batches = Batch.objects.filter(pk__in=pk_set)
+            permission_revocation_from_batches(instance, batches)
+            for batch in batches:
+                batch.delete()
+    except Exception as e:
+        pass
+        # print(f"m2m change department batch {e}")
 
 
 @receiver(pre_save, sender=Department)
-@receiver(m2m_changed, sender=Department.batch.through)
 def handle_department_modifications(
-    sender, instance, action=None, reverse=None, model=None, pk_set=None, **kwargs
-):
+    sender, instance, **kwargs
+):  # It'll also handle department creation
     try:
-        if (
-            action == "pre_add" or action == None
-        ):  # handle adding new batches to a department (department creation will also trigger this)
-            if action == "pre_add":
-                updated_batch_list = Batch.objects.filter(pk__in=pk_set)
-            else:
-                original_department = Department.objects.get(pk=instance.pk)
-                updated_batch_list = original_department.batch.all()
-            hod = instance.hod
-
-            permissions_format = {
-                instance.year: {instance.semester: {instance.name: {}}}
-            }
-
-            hod_permissions = deepcopy(permissions_format)
-            hod_permissions.update(hod.permissions)
-
-            for batch in updated_batch_list:
-                hod_permissions[instance.year][instance.semester][instance.name][
-                    batch.name
-                ] = deepcopy(HOD_PERMISSIONS)
-                for staff in batch.faculty.all():
-                    if staff.faculty.email == instance.hod.email:
-                        continue
-                    faculty_permissions = deepcopy(permissions_format)
-                    faculty_permissions.update(staff.faculty.permissions)
-                    faculty_permissions[instance.year][instance.semester][
-                        instance.name
-                    ][batch.name] = deepcopy(FACULTY_PERMISSIONS)
-                    staff.faculty.permissions.update(faculty_permissions)
-                    staff.faculty.save()
-            hod.permissions.update(hod_permissions)
-            delete_empty_keys(hod.permissions)
-            hod.save()
-
-        elif action == "pre_remove":  # handle removing batches from a department
-            removed_batches = Batch.objects.filter(pk__in=pk_set)
-            hod = instance.hod
-            department = hod.permissions[instance.year][instance.semester][
-                instance.name
-            ]
-
-            for batch, _ in department.items():
-                for batch in removed_batches:
-                    department[batch.name] = {}
-            delete_empty_keys(hod.permissions)
-            hod.save()
-
-            for batch in removed_batches:
-                for staff in batch.faculty.all():
-                    if instance.hod.email == staff.faculty.email:
-                        continue
-                    staff.faculty.permissions[instance.year][instance.semester][
-                        instance.name
-                    ][batch.name] = {}
-                    delete_empty_keys(staff.faculty.permissions)
-                    staff.faculty.save()
-                batch.delete()
-
-        if action == None:  # handle changing HOD of a department
-            if instance.pk:
-                original_department = Department.objects.get(pk=instance.pk)
-                old_hod_permissions = original_department.hod.permissions
-
-                for batch in original_department.batch.all():
-                    isHod = False
-                    for staff in batch.faculty.all():
-                        if staff.faculty.email == original_department.hod.email:
-                            isHod = True
-                    if isHod:
-                        old_hod_permissions[instance.year][instance.semester][
-                            instance.name
-                        ][batch.name] = FACULTY_PERMISSIONS
-                    else:
-                        del old_hod_permissions[instance.year][instance.semester][
-                            instance.name
-                        ][batch.name]
-                delete_empty_keys(original_department.hod.permissions)
-                original_department.hod.save()
+        if instance.pk:
+            old_instance = sender.objects.get(pk=instance.pk)
+            if old_instance.locked and not instance.locked:
+                permission_assignment_from_department(instance)
+            elif not old_instance.locked and instance.locked:
+                permission_revocation_from_department(instance)
+            elif not old_instance.locked and not instance.locked:
+                if old_instance.hod.email != instance.hod.email:
+                    hod_permission_transfer(instance)
+                    permission_assignment_from_department(instance)
 
     except Exception as e:
-        print(action, "WARNING", e)
+        pass
+        # print(f"department pre_save {e}")
 
 
 @receiver(pre_delete, sender=Department)
 def handle_hod_updation(sender, instance, **kwargs):  # handle deleting a department
     try:
         if instance.pk:
-            original_department = Department.objects.get(pk=instance.pk)
-            old_hod_permissions = original_department.hod.permissions
-            del original_department.hod.permissions[instance.year][instance.semester][
-                instance.name
-            ]
-
-            for batch in original_department.batch.all():
-                for staff in batch.faculty.all():
-                    del staff.faculty.permissions[instance.year][instance.semester][
-                        instance.name
-                    ][batch.name]
-                    delete_empty_keys(staff.faculty.permissions)
-                    staff.faculty.save()
+            permission_revocation_from_department(instance)
+            for batch in instance.batch.all():
                 batch.delete()
-            delete_empty_keys(original_department.hod.permissions)
-            original_department.hod.save()
     except Exception as e:
-        print("WARNING", e)
+        pass
+        # print("WARNING", e)
 
 
-# Batch model signals
+# Batch signals
 
 
 @receiver(m2m_changed, sender=Batch.faculty.through)
@@ -198,7 +245,8 @@ def handle_batch_faculty_updation(
                     staff.faculty.save()
 
     except Exception as e:
-        print(action, "WARNING", e)
+        pass
+        # print(action, "WARNING", e)
 
 
 @receiver(pre_delete, sender=Batch)
@@ -222,4 +270,5 @@ def handle_batch_delete(sender, instance, **kwargs):
                     staff.faculty.save()
 
     except Exception as e:
-        print("WARNING", e)
+        pass
+        # print("WARNING", e)
