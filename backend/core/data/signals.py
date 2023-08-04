@@ -7,7 +7,7 @@ from django.db.models.signals import (m2m_changed, post_delete, post_save,
 from django.dispatch import receiver
 
 from .models import Batch, Department, FacultyAllocation
-from .utils import delete_empty_keys
+from .utils import delete_empty_keys, permissions_assign
 
 HOD_PERMISSIONS = {
     "attendance": {"create": True, "read": True, "update": True, "delete": True},
@@ -27,28 +27,21 @@ FACULTY_PERMISSIONS = {
 def permission_assignment_from_batches(instance, batches):
     try:
         hod = instance.hod
-
-        permissions_format = {instance.year: {instance.semester: {instance.name: {}}}}
-
-        hod_permissions = deepcopy(permissions_format)
-        hod_permissions.update(hod.permissions)
-
         for batch in batches:
-            hod_permissions[instance.year][instance.semester][instance.name][
-                batch.name
-            ] = deepcopy(HOD_PERMISSIONS)
+            permissions_assign(
+                hod.permissions,
+                [instance.year, instance.semester, instance.name, batch.name],
+                HOD_PERMISSIONS,
+            )
             for staff in batch.faculty.all():
                 if staff.faculty.email == hod.email:
                     continue
-                faculty_permissions = deepcopy(permissions_format)
-                faculty_permissions.update(staff.faculty.permissions)
-                faculty_permissions[instance.year][instance.semester][instance.name][
-                    batch.name
-                ] = deepcopy(FACULTY_PERMISSIONS)
-                staff.faculty.permissions.update(faculty_permissions)
+                permissions_assign(
+                    staff.faculty.permissions,
+                    [instance.year, instance.semester, instance.name, batch.name],
+                    FACULTY_PERMISSIONS,
+                )
                 staff.faculty.save()
-        hod.permissions.update(hod_permissions)
-        delete_empty_keys(hod.permissions)
         hod.save()
     except Exception as e:
         pass
@@ -203,29 +196,26 @@ def handle_batch_faculty_updation(
 
             for department in instance.department_set.all():
                 hod = department.hod
-
-                permissions_format = {
-                    department.year: {department.semester: {department.name: {}}}
-                }
-
-                hod_permissions = deepcopy(permissions_format)
-                hod_permissions.update(hod.permissions)
-                hod_permissions[department.year][department.semester][department.name][
-                    batch.name
-                ] = deepcopy(HOD_PERMISSIONS)
-                hod.permissions.update(hod_permissions)
-                delete_empty_keys(hod.permissions)
+                permissions_assign(
+                    hod.permissions,
+                    [department.year, department.semester, department.name, batch.name],
+                    HOD_PERMISSIONS,
+                )
                 hod.save()
 
                 for staff in added_faculties:
                     if staff.faculty.email == hod.email:
                         continue
-                    faculty_permissions = deepcopy(permissions_format)
-                    faculty_permissions.update(staff.faculty.permissions)
-                    faculty_permissions[department.year][department.semester][
-                        department.name
-                    ][batch.name] = deepcopy(FACULTY_PERMISSIONS)
-                    staff.faculty.permissions.update(faculty_permissions)
+                    permissions_assign(
+                        staff.faculty.permissions,
+                        [
+                            department.year,
+                            department.semester,
+                            department.name,
+                            batch.name,
+                        ],
+                        FACULTY_PERMISSIONS,
+                    )
                     staff.faculty.save()
 
         elif action == "pre_remove":  # handle removing faculties from a batch
