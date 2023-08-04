@@ -7,6 +7,7 @@ from .models import (Attendance, Batch, Branch, Department, FacultyAllocation,
                      RemedialTestResult, StaffDetail, StudentDetail,
                      StudentSemesterRecord, StudyResource, Subject, TestResult,
                      Weightage)
+from .utils import permissions_assign
 
 
 class StaffDetailTestCase(TestCase):
@@ -265,6 +266,65 @@ class PermissionAutomationTestCase(TestCase):
             json.dumps(staff3.permissions),
             '{"2024-25": {"5": {"DEPT_1": {"B2": {"mooc": {"read": true, "create": true, "delete": true, "update": true}, "project": {"read": true, "create": true, "delete": true, "update": true}, "attendance": {"read": true, "create": true, "delete": true, "update": true}, "test_result": {"read": true, "create": true, "delete": true, "update": true}}}}}}',
         )
+
+    def test_department_lock_unlock(self):
+        department = Department.objects.all()[0]
+
+        department.locked = True
+        department.save()
+
+        staff1 = StaffDetail.objects.get(email="staff1@ljku.edu.in")
+        staff2 = StaffDetail.objects.get(email="staff2@ljku.edu.in")
+        staff3 = StaffDetail.objects.get(email="staff3@ljku.edu.in")
+
+        self.assertEqual(
+            json.dumps(staff1.permissions),
+            "{}",
+        )
+
+        self.assertEqual(
+            json.dumps(staff2.permissions),
+            "{}",
+        )
+
+        self.assertEqual(
+            json.dumps(staff3.permissions),
+            "{}",
+        )
+
+        department.locked = False
+        department.save()
+
+        staff1 = StaffDetail.objects.get(email="staff1@ljku.edu.in")
+        staff2 = StaffDetail.objects.get(email="staff2@ljku.edu.in")
+        staff3 = StaffDetail.objects.get(email="staff3@ljku.edu.in")
+
+        self.assertEqual(
+            json.dumps(staff1.permissions),
+            '{"2024-25": {"5": {"DEPT_1": {"B1": {"mooc": {"read": true, "create": true, "delete": false, "update": false}, "project": {"read": true, "create": true, "delete": false, "update": true}, "attendance": {"read": true, "create": true, "delete": false, "update": false}, "test_result": {"read": true, "create": true, "delete": false, "update": false}}}}}}',
+        )
+
+        self.assertEqual(
+            json.dumps(staff2.permissions),
+            '{"2024-25": {"5": {"DEPT_1": {"B2": {"mooc": {"read": true, "create": true, "delete": false, "update": false}, "project": {"read": true, "create": true, "delete": false, "update": true}, "attendance": {"read": true, "create": true, "delete": false, "update": false}, "test_result": {"read": true, "create": true, "delete": false, "update": false}}}}}}',
+        )
+
+        self.assertEqual(
+            json.dumps(staff3.permissions),
+            '{"2024-25": {"5": {"DEPT_1": {"B1": {"mooc": {"read": true, "create": true, "delete": true, "update": true}, "project": {"read": true, "create": true, "delete": true, "update": true}, "attendance": {"read": true, "create": true, "delete": true, "update": true}, "test_result": {"read": true, "create": true, "delete": true, "update": true}}, "B2": {"mooc": {"read": true, "create": true, "delete": true, "update": true}, "project": {"read": true, "create": true, "delete": true, "update": true}, "attendance": {"read": true, "create": true, "delete": true, "update": true}, "test_result": {"read": true, "create": true, "delete": true, "update": true}}}}}}',
+        )
+
+
+class PermissionsAssignUtil(TestCase):
+    temp = {"a": {"b": 1}}
+
+    def test_base_assign(self):
+        permissions_assign(self.temp, ["c"], 2)
+        self.assertEqual(self.temp, {"a": {"b": 1}, "c": 2})
+
+    def test_nested_assign(self):
+        permissions_assign(self.temp, ["a", "c", "d"], 5)
+        self.assertEqual(self.temp, {"a": {"b": 1, "c": {"d": 5}}, "c": 2})
 
 
 class WeightageTestCase(TestCase):

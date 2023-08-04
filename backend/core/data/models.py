@@ -339,6 +339,11 @@ class Department(models.Model):
     study_resource = models.ManyToManyField(
         "StudyResource", verbose_name="Study Resources", blank=True
     )
+    locked = models.BooleanField(
+        default=False,
+        verbose_name="Locked",
+        help_text="Is the department locked?",
+    )
 
     class Meta:
         verbose_name_plural = "Departments"
