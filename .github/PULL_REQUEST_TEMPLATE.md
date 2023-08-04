@@ -1,7 +1,5 @@
-
-**This PR closes #**
+This PR closes #
 
 ## Changes
 
--
 -
