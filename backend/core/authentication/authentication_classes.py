@@ -4,7 +4,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class is_active_staff(BaseAuthentication):
+class IsActiveStaff(BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get("Authorization")
         if auth_header is None:
@@ -35,7 +35,7 @@ class is_active_staff(BaseAuthentication):
             raise AuthenticationFailed("Something went wrong")
 
 
-class is_active_student(BaseAuthentication):
+class IsActiveStudent(BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get("Authorization")
         if auth_header is None:
