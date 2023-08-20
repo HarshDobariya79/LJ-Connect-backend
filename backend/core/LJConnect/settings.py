@@ -100,6 +100,8 @@ USE_I18N = True
 
 USE_TZ = False
 
+APPEND_SLASH = True
+
 STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
