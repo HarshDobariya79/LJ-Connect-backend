@@ -1,10 +1,11 @@
 # Django keys
-backend/core/.env
+*.env
 
 # Django environment
-backend/env/
+*/env/
+*/venv/
 
 # Django cache files
 *__pycache__
 
-.cache
+*.cache
