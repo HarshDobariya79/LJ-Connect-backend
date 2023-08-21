@@ -73,12 +73,12 @@ create:
 
 create-postgres:
 	@echo "$(GREEN_COLOR)=== Creating postgres container ===$(NC)"
-	@docker-compose -f ../postgres.yml up -d
+	@docker-compose -f ./postgres.yml up -d
 .PHONY: postgres
 
 delete-postgres:
 	@echo "$(GREEN_COLOR)=== Deleting postgres container ===$(NC)"
-	@docker-compose -f ../postgres.yml down -v
+	@docker-compose -f ./postgres.yml down -v
 .PHONY: delete-postgres
 
 reset-postgres: delete-postgres create-postgres
