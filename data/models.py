@@ -52,6 +52,12 @@ class StaffDetail(models.Model):
         verbose_name="Active",
         help_text="Is the staff actively doing his/her job?",
     )
+    admin = models.BooleanField(
+        default=False,
+        verbose_name="admin",
+        help_text="Is the staff admin?",
+    )
+
     permissions = models.JSONField(
         default=dict,
         verbose_name="Permissions",
