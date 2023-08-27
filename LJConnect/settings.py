@@ -11,7 +11,7 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "rest_framework.authtoken",
     "allauth.socialaccount.providers.google",
+    # CORS
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -44,6 +46,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # CORS
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "LJConnect.urls"
@@ -134,7 +138,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
     "BLACKLIST_AFTER_ROTATION": True,
-    "JWT_LEEWAY": timedelta(seconds=10),
+    "LEEWAY": 10,  # seconds
 }
 
 # Social authentication settings
@@ -150,3 +154,12 @@ SOCIALACCOUNT_PROVIDERS = {
         ],
     },
 }
+
+CORS_ALLOWED_ORIGINS = [
+    config("FRONTEND_URL"),
+]
+
+CORS_ALLOW_HEADERS = (
+    "content-type",
+    "authorization",
+)
