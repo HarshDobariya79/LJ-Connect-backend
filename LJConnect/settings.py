@@ -134,7 +134,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
     "BLACKLIST_AFTER_ROTATION": True,
-    "JWT_LEEWAY": timedelta(seconds=10),
+    "LEEWAY": 10,  # seconds
 }
 
 # Social authentication settings
