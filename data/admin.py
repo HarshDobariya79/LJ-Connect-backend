@@ -1,10 +1,24 @@
 from django.contrib import admin
 
-from .models import (Attendance, Batch, Branch, Department, FacultyAllocation,
-                     GroupProject, IndividualProject, MOOCCourse, MOOCResult,
-                     RemedialTestResult, StaffDetail, StudentDetail,
-                     StudentSemesterRecord, StudyResource, Subject, TestResult,
-                     Weightage)
+from .models import (
+    Attendance,
+    Batch,
+    Branch,
+    Department,
+    FacultyAllocation,
+    GroupProject,
+    IndividualProject,
+    MOOCCourse,
+    MOOCResult,
+    RemedialTestResult,
+    StaffDetail,
+    StudentDetail,
+    StudentSemesterRecord,
+    StudyResource,
+    Subject,
+    TestResult,
+    Weightage,
+)
 
 
 class SemesterSearch:
