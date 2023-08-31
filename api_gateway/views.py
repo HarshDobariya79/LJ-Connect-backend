@@ -12,13 +12,7 @@ from data.models import (
     StudyResource,
 )
 
-from .serializers import (
-    BatchSerializer,
-    BranchSerializer,
-    DepartmentSerializer,
-    StaffDetailSerializer,
-    StudentDetailSerializer,
-)
+from .serializers import BranchSerializer, DepartmentSerializer, StaffDetailSerializer
 
 
 class StaffDetailAPI(APIView):
