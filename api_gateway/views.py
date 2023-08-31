@@ -3,9 +3,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
-from data.models import Branch, StaffDetail
+from data.models import Branch, StaffDetail, StudentDetail
 
-from .serializers import BranchSerializer, StaffDetailSerializer
+from .serializers import (
+    BranchSerializer,
+    StaffDetailSerializer,
+    StudentDetailSerializer,
+)
 
 
 class StaffDetailAPI(APIView):
@@ -63,6 +67,36 @@ class BranchAPI(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = BranchSerializer(branch, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentDetailAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        student_details = StudentDetail.objects.all()
+        serializer = StudentDetailSerializer(student_details, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StudentDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        email = request.data.get("email")
+
+        try:
+            student_detail = StudentDetail.objects.get(email=email)
+        except StudentDetail.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StudentDetailSerializer(student_detail, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
