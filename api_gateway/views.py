@@ -3,9 +3,22 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
-from data.models import Branch, StaffDetail
+from data.models import (
+    Batch,
+    Branch,
+    Department,
+    StaffDetail,
+    StudentDetail,
+    StudyResource,
+)
 
-from .serializers import BranchSerializer, StaffDetailSerializer
+from .serializers import (
+    BatchSerializer,
+    BranchSerializer,
+    DepartmentSerializer,
+    StaffDetailSerializer,
+    StudentDetailSerializer,
+)
 
 
 class StaffDetailAPI(APIView):
@@ -67,3 +80,55 @@ class BranchAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DepartmentAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        serializer = DepartmentSerializer(departments, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = DepartmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        year = request.data.get("year")
+        semester = request.data.get("semester")
+        department_name = request.data.get("name")
+
+        if year and semester and department_name:
+            matching_departments = Department.objects.filter(
+                year=year, semester=semester, name=department_name
+            )
+
+            if matching_departments.exists():
+                try:
+                    department = Department.objects.get(
+                        year=year, semester=semester, name=department_name
+                    )
+                except Department.DoesNotExist:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+
+                serializer = DepartmentSerializer(department, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
+                return Response(
+                    "No matching departments found.", status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                "Invalid or missing data in the request.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
