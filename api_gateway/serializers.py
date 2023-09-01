@@ -52,3 +52,9 @@ class FacultyAllocationSerializer(serializers.ModelSerializer):
             "faculty_middle_name",
             "faculty_last_name",
         )
+
+
+class StaffDetailSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffDetail
+        fields = ("email", "first_name", "middle_name", "last_name")
