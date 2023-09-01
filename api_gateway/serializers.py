@@ -1,13 +1,6 @@
 from rest_framework import serializers
 
-from data.models import (
-    Batch,
-    Branch,
-    FacultyAllocation,
-    StaffDetail,
-    StudentDetail,
-    Subject,
-)
+from data.models import Branch, FacultyAllocation, StaffDetail, Subject
 
 
 class StaffDetailSerializer(serializers.ModelSerializer):
@@ -58,3 +51,9 @@ class StaffDetailSupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffDetail
         fields = ("email", "first_name", "middle_name", "last_name")
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ("subject_code", "subject_short_name")
