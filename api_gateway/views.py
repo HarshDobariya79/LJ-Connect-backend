@@ -9,6 +9,7 @@ from data.models import (
     Branch,
     Department,
     StaffDetail,
+    FacultyAllocation,
     StudentDetail,
     StudyResource,
 )
@@ -17,13 +18,12 @@ from .serializers import (
     BranchSerializer,
     BranchSupportSerializer,
     DepartmentSerializer,
+    FacultyAllocationSerializer,
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
-)
 
 
 class StaffDetailAPI(APIView):
-    # authentication_classes = [IsActiveStaff]
     permission_classes = [IsAdmin]
 
     def get(self, request):
@@ -51,6 +51,15 @@ class StaffDetailAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StaffDetailCompactAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        staff_details = StaffDetail.objects.filter(active=True)
+        serializer = StaffDetailSupportSerializer(staff_details, many=True)
+        return Response(serializer.data)
 
 
 class BranchAPI(APIView):
@@ -151,3 +160,57 @@ class DepartmentAPI(APIView):
                 "Invalid or missing data in the request.",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+class FacultyAllocationAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        allocations = FacultyAllocation.objects.all()
+        serializer = FacultyAllocationSerializer(allocations, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        faculty_id = request.data.get("faculty")
+        subject_id = request.data.get("subject")
+
+        # Check if a FacultyAllocation with the same faculty and subject already exists
+        if FacultyAllocation.objects.filter(
+            faculty_id=faculty_id, subject_id=subject_id
+        ).exists():
+            return Response(
+                {"detail": "Faculty allocation already exists."},
+                status=status.HTTP_201_CREATED,
+            )
+
+        serializer = FacultyAllocationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self,request):
+        # Assuming you have a unique identifier like 'faculty_id' or 'subject_id'
+        object_id = request.data.get("id")
+        faculty_id = request.data.get("faculty")
+        subject_id = request.data.get("subject")
+
+        try:
+            allocation = FacultyAllocation.objects.get(id=object_id)
+        except FacultyAllocation.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if FacultyAllocation.objects.filter(
+            faculty=faculty_id, subject=subject_id
+        ).exists():
+            allocation.delete()
+            return Response(
+                {"detail": "Faculty allocation already exists."},
+                status=status.HTTP_200_OK,
+            )
+
+        serializer = FacultyAllocationSerializer(allocation, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

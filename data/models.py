@@ -167,6 +167,11 @@ class Subject(models.Model):
         help_text="Weightage distribution of the subject",
     )
 
+    def delete(self, *args, **kwargs):
+        for w in self.weightage.all():
+            w.delete()
+        super(Subject, self).delete(*args, **kwargs)
+
     class Meta:
         verbose_name_plural = "Subjects"
         verbose_name = "Subject"
