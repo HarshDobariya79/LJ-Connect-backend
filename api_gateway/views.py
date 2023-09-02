@@ -7,6 +7,7 @@ from data.models import Branch, StaffDetail, StudentDetail
 
 from .serializers import (
     BranchSerializer,
+    BranchSupportSerializer,
     StaffDetailSerializer,
     StudentDetailSerializer,
 )
@@ -79,7 +80,15 @@ class StudentDetailAPI(APIView):
     def get(self, request):
         student_details = StudentDetail.objects.all()
         serializer = StudentDetailSerializer(student_details, many=True)
-        return Response(serializer.data)
+        serialized_data = serializer.data
+
+        for data in serialized_data:
+            branch_code = data["branch"]
+            branch_instance = Branch.objects.get(branch_code=branch_code)
+            branch_serializer = BranchSupportSerializer(branch_instance)
+            data["branch"] = branch_serializer.data
+
+        return Response(serialized_data)
 
     def post(self, request):
         serializer = StudentDetailSerializer(data=request.data)
