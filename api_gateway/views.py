@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
-
 from data.models import (
     Batch,
     Branch,
@@ -13,7 +12,7 @@ from data.models import (
     StaffDetail,
     StudentDetail,
     StudyResource,
-    Subject
+    Subject,
 )
 
 from .serializers import (
@@ -96,6 +95,7 @@ class BranchAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DepartmentAPI(APIView):
     permission_classes = [IsAdmin]
 
@@ -165,6 +165,7 @@ class DepartmentAPI(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class StudentDetailAPI(APIView):
     permission_classes = [IsAdmin]
 
@@ -203,7 +204,6 @@ class StudentDetailAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class FacultyAllocationAPI(APIView):
@@ -258,3 +258,12 @@ class FacultyAllocationAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubjectAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        subjects = Subject.objects.all()
+        serializer = SubjectSerializer(subjects, many=True)
+        return Response(serializer.data)
