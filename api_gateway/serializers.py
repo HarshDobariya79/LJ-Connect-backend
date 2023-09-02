@@ -22,6 +22,17 @@ class BranchSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BranchSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = ("branch_code", "branch_short_name")
+
+
+class StudentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentDetail
+        fields = "__all__"
+
 class FacultyAllocationSerializer(serializers.ModelSerializer):
     faculty_short_name = serializers.CharField(
         source="faculty.short_name", read_only=True
@@ -58,3 +69,4 @@ class StaffDetailSupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffDetail
         fields = ("email", "first_name", "middle_name", "last_name")
+
