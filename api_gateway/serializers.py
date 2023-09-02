@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from data.models import Branch, FacultyAllocation, StaffDetail, Subject
+from data.models import (
+    Batch,
+    Branch,
+    FacultyAllocation,
+    StaffDetail,
+    StudentDetail,
+    Subject,
+)
 
 
 class StaffDetailSerializer(serializers.ModelSerializer):
@@ -25,6 +32,7 @@ class StudentDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentDetail
         fields = "__all__"
+
 
 class FacultyAllocationSerializer(serializers.ModelSerializer):
     faculty_short_name = serializers.CharField(
