@@ -15,6 +15,18 @@ class BranchSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class BranchSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Branch
+        fields = ("branch_code", "branch_short_name")
+
+
+class StaffDetailSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StaffDetail
+        fields = ("email", "first_name", "middle_name", "last_name")
+
+
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department

@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,7 +13,13 @@ from data.models import (
     StudyResource,
 )
 
-from .serializers import BranchSerializer, DepartmentSerializer, StaffDetailSerializer
+from .serializers import (
+    BranchSerializer,
+    BranchSupportSerializer,
+    DepartmentSerializer,
+    StaffDetailSerializer,
+    StaffDetailSupportSerializer,
+)
 
 
 class StaffDetailAPI(APIView):
@@ -82,7 +89,25 @@ class DepartmentAPI(APIView):
     def get(self, request):
         departments = Department.objects.all()
         serializer = DepartmentSerializer(departments, many=True)
-        return Response(serializer.data)
+
+        serialized_data = serializer.data
+
+        for department_data in serialized_data:
+            branch_codes = department_data["branch"]
+            branch_data_list = []
+
+            for branch_code in branch_codes:
+                branch_instance = get_object_or_404(Branch, branch_code=branch_code)
+                branch_serializer = BranchSupportSerializer(branch_instance)
+                branch_data_list.append(branch_serializer.data)
+                department_data["branch"] = branch_data_list
+
+                hod = department_data["hod"]
+                hod_instance = StaffDetail.objects.get(email=hod)
+                staff_serializer = StaffDetailSupportSerializer(hod_instance)
+                department_data["hod"] = staff_serializer.data
+
+        return Response(serialized_data)
 
     def post(self, request):
         serializer = DepartmentSerializer(data=request.data)
