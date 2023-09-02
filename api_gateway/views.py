@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
-
 from data.models import Branch, FacultyAllocation, StaffDetail, StudentDetail
 
 from .serializers import (
@@ -11,7 +10,8 @@ from .serializers import (
     BranchSupportSerializer,
     FacultyAllocationSerializer,
     StaffDetailSerializer,
-    StaffDetailSupportSerializer
+    StaffDetailSupportSerializer,
+    StudentDetailSerializer,
 )
 
 
@@ -83,6 +83,7 @@ class BranchAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class StudentDetailAPI(APIView):
     permission_classes = [IsAdmin]
 
@@ -108,7 +109,6 @@ class StudentDetailAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
-
         email = request.data.get("email")
 
         try:
@@ -146,6 +146,12 @@ class FacultyAllocationAPI(APIView):
             )
 
         serializer = FacultyAllocationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
         # Assuming you have a unique identifier like 'faculty_id' or 'subject_id'
         object_id = request.data.get("id")
         faculty_id = request.data.get("faculty")
@@ -166,7 +172,6 @@ class FacultyAllocationAPI(APIView):
             )
 
         serializer = FacultyAllocationSerializer(allocation, data=request.data)
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
