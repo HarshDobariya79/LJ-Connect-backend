@@ -30,6 +30,13 @@ class BranchSupportSerializer(serializers.ModelSerializer):
         model = Branch
         fields = ("branch_code", "branch_short_name")
 
+
+class StudentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentDetail
+        fields = "__all__"
+
+
 class FacultyAllocationSerializer(serializers.ModelSerializer):
     faculty_short_name = serializers.CharField(
         source="faculty.short_name", read_only=True
@@ -98,3 +105,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
         return instance
 
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ("subject_code", "subject_short_name")

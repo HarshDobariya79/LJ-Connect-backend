@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
+
 from data.models import (
     Batch,
     Branch,
@@ -12,6 +13,7 @@ from data.models import (
     StaffDetail,
     StudentDetail,
     StudyResource,
+    Subject
 )
 
 from .serializers import (
@@ -21,6 +23,8 @@ from .serializers import (
     FacultyAllocationSerializer,
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
+    StudentDetailSerializer,
+    SubjectSerializer,
 )
 
 
@@ -92,7 +96,6 @@ class BranchAPI(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class DepartmentAPI(APIView):
     permission_classes = [IsAdmin]
 
@@ -161,6 +164,46 @@ class DepartmentAPI(APIView):
                 "Invalid or missing data in the request.",
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+class StudentDetailAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        student_details = StudentDetail.objects.all()
+        serializer = StudentDetailSerializer(student_details, many=True)
+        serialized_data = serializer.data
+
+        for data in serialized_data:
+            branch_code = data["branch"]
+            branch_instance = Branch.objects.get(branch_code=branch_code)
+            branch_serializer = BranchSupportSerializer(branch_instance)
+            data["branch"] = branch_serializer.data
+
+        return Response(serialized_data)
+
+    def post(self, request):
+        serializer = StudentDetailSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        email = request.data.get("email")
+
+        try:
+            student_detail = StudentDetail.objects.get(email=email)
+        except StudentDetail.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = StudentDetailSerializer(student_detail, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class FacultyAllocationAPI(APIView):

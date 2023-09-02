@@ -7,6 +7,8 @@ from .views import (
     FacultyAllocationAPI,
     StaffDetailAPI,
     StaffDetailCompactAPI,
+    SubjectAPI,
+    StudentDetailAPI,
 )
 
 
@@ -19,9 +21,11 @@ urlpatterns = [
 
     path("v1/department/", DepartmentAPI.as_view(), name="department-list"),
 
+    path("v1/student/", StudentDetailAPI.as_view(), name="student-list"),
     path(
         "v1/faculty-allocation/",
         FacultyAllocationAPI.as_view(),
         name="faculty-allocation-list",
     ),
+    path("v1/subject/", SubjectAPI.as_view(), name="subject-list"),
 ]
