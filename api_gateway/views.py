@@ -8,8 +8,8 @@ from data.models import (
     Batch,
     Branch,
     Department,
-    StaffDetail,
     FacultyAllocation,
+    StaffDetail,
     StudentDetail,
     StudyResource,
 )
@@ -21,6 +21,7 @@ from .serializers import (
     FacultyAllocationSerializer,
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
+)
 
 
 class StaffDetailAPI(APIView):
@@ -161,6 +162,7 @@ class DepartmentAPI(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 class FacultyAllocationAPI(APIView):
     permission_classes = [IsAdmin]
 
@@ -187,8 +189,8 @@ class FacultyAllocationAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-    def put(self,request):
+
+    def put(self, request):
         # Assuming you have a unique identifier like 'faculty_id' or 'subject_id'
         object_id = request.data.get("id")
         faculty_id = request.data.get("faculty")
@@ -213,4 +215,3 @@ class FacultyAllocationAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
