@@ -16,6 +16,7 @@ from data.models import (
 )
 
 from .serializers import (
+    BatchSupportSerializer,
     BranchSerializer,
     BranchSupportSerializer,
     DepartmentSerializer,
@@ -23,6 +24,7 @@ from .serializers import (
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
     StudentDetailSerializer,
+    StudyResourceSerializer,
     SubjectSerializer,
 )
 
@@ -115,10 +117,30 @@ class DepartmentAPI(APIView):
                 branch_data_list.append(branch_serializer.data)
                 department_data["branch"] = branch_data_list
 
-                hod = department_data["hod"]
-                hod_instance = StaffDetail.objects.get(email=hod)
-                staff_serializer = StaffDetailSupportSerializer(hod_instance)
-                department_data["hod"] = staff_serializer.data
+            hod = department_data["hod"]
+            hod_instance = StaffDetail.objects.get(email=hod)
+            staff_serializer = StaffDetailSupportSerializer(hod_instance)
+            department_data["hod"] = staff_serializer.data
+
+            batches = department_data["batch"]
+            batch_data_list = []
+
+            for batch in batches:
+                batch_instance = get_object_or_404(Batch, id=batch)
+                batch_serializer = BatchSupportSerializer(batch_instance)
+                batch_data_list.append(batch_serializer.data)
+                department_data["batch"] = batch_data_list
+
+            study_resources = department_data["study_resource"]
+            study_resource_list = []
+
+            for resource in study_resources:
+                study_resource_instance = get_object_or_404(StudyResource, id=resource)
+                study_resource_serializer = StudyResourceSerializer(
+                    study_resource_instance
+                )
+                study_resource_list.append(study_resource_serializer.data)
+                department_data["study_resource"] = study_resource_list
 
         return Response(serialized_data)
 

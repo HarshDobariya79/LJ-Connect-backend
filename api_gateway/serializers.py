@@ -1,15 +1,14 @@
 from rest_framework import serializers
 
-
 from data.models import (
     Batch,
     Branch,
+    Department,
     FacultyAllocation,
     StaffDetail,
-    Department,
     StudentDetail,
+    StudyResource,
     Subject,
-    StudyResource
 )
 
 
@@ -69,11 +68,22 @@ class FacultyAllocationSerializer(serializers.ModelSerializer):
         )
 
 
-
 class StaffDetailSupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffDetail
         fields = ("email", "first_name", "middle_name", "last_name")
+
+
+class BatchSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = ("id", "name")
+
+
+class StudyResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudyResource
+        fields = "__all__"
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -104,6 +114,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
             instance.batch.add(*batch_data)
 
         return instance
+
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
