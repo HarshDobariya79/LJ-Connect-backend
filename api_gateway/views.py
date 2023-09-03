@@ -24,6 +24,7 @@ from .serializers import (
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
     StudentDetailSerializer,
+    StudentDetailSupportSerializer,
     StudyResourceSerializer,
     SubjectSerializer,
 )
@@ -226,6 +227,15 @@ class StudentDetailAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentDetailCompactAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request, format=None):
+        students = StudentDetail.objects.filter(graduated=False)
+        serializer = StudentDetailSupportSerializer(students, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class FacultyAllocationAPI(APIView):
