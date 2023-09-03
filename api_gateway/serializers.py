@@ -36,6 +36,20 @@ class StudentDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class StudentDetailSupportSerializer(serializers.ModelSerializer):
+    branch_short_name = serializers.CharField(source="branch.branch_short_name")
+
+    class Meta:
+        model = StudentDetail
+        fields = (
+            "enrolment_no",
+            "first_name",
+            "middle_name",
+            "last_name",
+            "branch_short_name",
+        )
+
+
 class FacultyAllocationSerializer(serializers.ModelSerializer):
     faculty_short_name = serializers.CharField(
         source="faculty.short_name", read_only=True
