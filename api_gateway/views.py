@@ -1,17 +1,30 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
-from data.models import Branch, FacultyAllocation, StaffDetail, StudentDetail, Subject
+from data.models import (
+    Batch,
+    Branch,
+    Department,
+    FacultyAllocation,
+    StaffDetail,
+    StudentDetail,
+    StudyResource,
+    Subject,
+)
 
 from .serializers import (
+    BatchSupportSerializer,
     BranchSerializer,
     BranchSupportSerializer,
+    DepartmentSerializer,
     FacultyAllocationSerializer,
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
     StudentDetailSerializer,
+    StudyResourceSerializer,
     SubjectSerializer,
 )
 
@@ -83,6 +96,96 @@ class BranchAPI(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DepartmentAPI(APIView):
+    permission_classes = [IsAdmin]
+
+    def get(self, request):
+        departments = Department.objects.all()
+        serializer = DepartmentSerializer(departments, many=True)
+
+        serialized_data = serializer.data
+
+        for department_data in serialized_data:
+            branch_codes = department_data["branch"]
+            branch_data_list = []
+
+            for branch_code in branch_codes:
+                branch_instance = get_object_or_404(Branch, branch_code=branch_code)
+                branch_serializer = BranchSupportSerializer(branch_instance)
+                branch_data_list.append(branch_serializer.data)
+                department_data["branch"] = branch_data_list
+
+            hod = department_data["hod"]
+            hod_instance = StaffDetail.objects.get(email=hod)
+            staff_serializer = StaffDetailSupportSerializer(hod_instance)
+            department_data["hod"] = staff_serializer.data
+
+            batches = department_data["batch"]
+            batch_data_list = []
+
+            for batch in batches:
+                batch_instance = get_object_or_404(Batch, id=batch)
+                batch_serializer = BatchSupportSerializer(batch_instance)
+                batch_data_list.append(batch_serializer.data)
+                department_data["batch"] = batch_data_list
+
+            study_resources = department_data["study_resource"]
+            study_resource_list = []
+
+            for resource in study_resources:
+                study_resource_instance = get_object_or_404(StudyResource, id=resource)
+                study_resource_serializer = StudyResourceSerializer(
+                    study_resource_instance
+                )
+                study_resource_list.append(study_resource_serializer.data)
+                department_data["study_resource"] = study_resource_list
+
+        return Response(serialized_data)
+
+    def post(self, request):
+        serializer = DepartmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        year = request.data.get("year")
+        semester = request.data.get("semester")
+        department_name = request.data.get("name")
+
+        if year and semester and department_name:
+            matching_departments = Department.objects.filter(
+                year=year, semester=semester, name=department_name
+            )
+
+            if matching_departments.exists():
+                try:
+                    department = Department.objects.get(
+                        year=year, semester=semester, name=department_name
+                    )
+                except Department.DoesNotExist:
+                    return Response(status=status.HTTP_404_NOT_FOUND)
+
+                serializer = DepartmentSerializer(department, data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
+                return Response(
+                    "No matching departments found.", status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            return Response(
+                "Invalid or missing data in the request.",
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class StudentDetailAPI(APIView):
