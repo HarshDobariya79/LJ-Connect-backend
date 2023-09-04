@@ -320,10 +320,15 @@ class BatchAPI(APIView):
 
         serializer = BatchSerializer(data=data)
         if serializer.is_valid():
+            if "department" in request.data:
+                department_id = request.data["department"]
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            department = Department.objects.get(id=department_id)
             batch = serializer.save()
-
             batch.faculty.set(faculty_ids)
             batch.student.set(enrolment_numbers)
+            department.batch.add(batch)
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
