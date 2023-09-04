@@ -134,3 +134,20 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ("subject_code", "subject_short_name")
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    # Use FacultyAllocationSerializer for the faculty field
+    faculty = FacultyAllocationSerializer(many=True, required=False)
+
+    # Use StudentDetailSupportSerializer for the student field
+    student = StudentDetailSupportSerializer(many=True, required=False)
+
+    class Meta:
+        model = Batch
+        fields = (
+            "id",
+            "name",
+            "faculty",
+            "student",
+        )
