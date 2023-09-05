@@ -3,7 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
+from authentication.permission_classes import (
+    IsActiveStaff,
+    IsActiveStudent,
+    IsAdmin,
+    IsHOD,
+)
 from data.models import (
     Batch,
     Branch,
@@ -301,7 +306,7 @@ class SubjectAPI(APIView):
 
 
 class BatchAPI(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdmin | IsHOD]
 
     def get(self, request):
         batches = Batch.objects.all()
