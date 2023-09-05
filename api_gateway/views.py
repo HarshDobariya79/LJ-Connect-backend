@@ -26,6 +26,7 @@ from .serializers import (
     BranchSerializer,
     BranchSupportSerializer,
     DepartmentSerializer,
+    DepartmentSupportSerializer,
     FacultyAllocationSerializer,
     StaffDetailSerializer,
     StaffDetailSupportSerializer,
@@ -361,3 +362,17 @@ class BatchAPI(APIView):
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OwnDepartmentAPI(APIView):
+    permission_classes = [IsAdmin | IsHOD]
+
+    def get(self, request):
+        email = get_email_from_access_token(request)
+        staff_obj = StaffDetail.objects.filter(email=email, admin=True)
+        if staff_obj:
+            own_department = Department.objects.filter(locked=False)
+        else:
+            own_department = Department.objects.filter(hod__email=email, locked=False)
+        serializer = DepartmentSupportSerializer(own_department, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
