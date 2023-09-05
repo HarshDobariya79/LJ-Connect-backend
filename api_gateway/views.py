@@ -376,3 +376,10 @@ class OwnDepartmentAPI(APIView):
             own_department = Department.objects.filter(hod__email=email, locked=False)
         serializer = DepartmentSupportSerializer(own_department, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class BranchCompactAPI(APIView):
+    def get(self, request):
+        branches = Branch.objects.filter(available=True)
+        serializer = BranchSupportSerializer(branches, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

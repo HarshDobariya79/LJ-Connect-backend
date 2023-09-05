@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     BatchAPI,
     BranchAPI,
+    BranchCompactAPI,
     DepartmentAPI,
     FacultyAllocationAPI,
     OwnDepartmentAPI,
@@ -19,10 +20,15 @@ urlpatterns = [
         "v1/staff/compact/", StaffDetailCompactAPI.as_view(), name="staff-list-compact"
     ),
     path("v1/branch/", BranchAPI.as_view(), name="branch-list"),
+    path("v1/branch/compact/", BranchCompactAPI.as_view(), name="branch-compact-list"),
     path("v1/department/", DepartmentAPI.as_view(), name="department-list"),
     path("v1/department/own/", OwnDepartmentAPI.as_view(), name="own-department-list"),
     path("v1/student/", StudentDetailAPI.as_view(), name="student-list"),
-    path("v1/student/compact/", StudentDetailCompactAPI.as_view(), name="student-list"),
+    path(
+        "v1/student/compact/",
+        StudentDetailCompactAPI.as_view(),
+        name="student-compact-list",
+    ),
     path(
         "v1/faculty-allocation/",
         FacultyAllocationAPI.as_view(),
