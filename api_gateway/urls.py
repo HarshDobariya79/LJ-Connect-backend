@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    BatchAPI,
     BranchAPI,
     DepartmentAPI,
     FacultyAllocationAPI,
@@ -26,4 +27,5 @@ urlpatterns = [
         name="faculty-allocation-list",
     ),
     path("v1/subject/", SubjectAPI.as_view(), name="subject-list"),
+    path("v1/batch/", BatchAPI.as_view(), name="batch-list"),
 ]

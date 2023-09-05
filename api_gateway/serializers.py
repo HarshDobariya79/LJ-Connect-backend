@@ -134,3 +134,30 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ("subject_code", "subject_short_name")
+
+
+class BatchSerializer(serializers.ModelSerializer):
+    faculty = FacultyAllocationSerializer(many=True, required=False)
+    student = StudentDetailSupportSerializer(many=True, required=False)
+    department = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Batch
+        fields = (
+            "id",
+            "name",
+            "faculty",
+            "student",
+            "department",
+        )
+
+    def get_department(self, obj):
+        departments = obj.department_set.all()
+        if departments:
+            return {
+                "name": departments[0].name,
+                "year": departments[0].year,
+                "semester": departments[0].semester,
+            }
+        else:
+            return None

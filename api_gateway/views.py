@@ -3,7 +3,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from authentication.permission_classes import IsActiveStaff, IsActiveStudent, IsAdmin
+from authentication.permission_classes import (
+    IsActiveStaff,
+    IsActiveStudent,
+    IsAdmin,
+    IsHOD,
+)
 from data.models import (
     Batch,
     Branch,
@@ -16,6 +21,7 @@ from data.models import (
 )
 
 from .serializers import (
+    BatchSerializer,
     BatchSupportSerializer,
     BranchSerializer,
     BranchSupportSerializer,
@@ -28,6 +34,7 @@ from .serializers import (
     StudyResourceSerializer,
     SubjectSerializer,
 )
+from .utils import get_email_from_access_token
 
 
 class StaffDetailAPI(APIView):
@@ -250,7 +257,6 @@ class FacultyAllocationAPI(APIView):
         faculty_id = request.data.get("faculty")
         subject_id = request.data.get("subject")
 
-        # Check if a FacultyAllocation with the same faculty and subject already exists
         if FacultyAllocation.objects.filter(
             faculty_id=faculty_id, subject_id=subject_id
         ).exists():
@@ -266,7 +272,6 @@ class FacultyAllocationAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request):
-        # Assuming you have a unique identifier like 'faculty_id' or 'subject_id'
         object_id = request.data.get("id")
         faculty_id = request.data.get("faculty")
         subject_id = request.data.get("subject")
@@ -299,3 +304,60 @@ class SubjectAPI(APIView):
         subjects = Subject.objects.all()
         serializer = SubjectSerializer(subjects, many=True)
         return Response(serializer.data)
+
+
+class BatchAPI(APIView):
+    permission_classes = [IsAdmin | IsHOD]
+
+    def get(self, request):
+        email = get_email_from_access_token(request)
+        staff_obj = StaffDetail.objects.filter(email=email, admin=True)
+        if staff_obj:
+            batches = Batch.objects.all()
+        else:
+            batches = Batch.objects.filter(department__hod__email=email)
+        serializer = BatchSerializer(batches, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        if "faculty" in request.data and not request.data["faculty"]:
+            del request.data["faculty"]
+        if "student" in request.data and not request.data["student"]:
+            del request.data["student"]
+        data = request.data.copy()
+
+        faculty_ids = data.pop("faculty", [])
+        enrolment_numbers = data.pop("student", [])
+
+        serializer = BatchSerializer(data=data)
+        if serializer.is_valid():
+            if "department" in request.data:
+                department_id = request.data["department"]
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            department = Department.objects.get(id=department_id)
+            batch = serializer.save()
+            batch.faculty.set(faculty_ids)
+            batch.student.set(enrolment_numbers)
+            department.batch.add(batch)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        id = request.data.get("id")
+        name = request.data.get("name")
+        batch = get_object_or_404(Batch, id=id, name=name)
+        data = request.data.copy()
+        faculty_ids = data.pop("faculty", [])
+        enrolment_numbers = data.pop("student", [])
+
+        serializer = BatchSerializer(batch, data=data)
+        if serializer.is_valid():
+            batch = serializer.save()
+
+            batch.faculty.set(faculty_ids)
+            batch.student.set(enrolment_numbers)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
