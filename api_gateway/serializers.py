@@ -130,6 +130,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         return instance
 
 
+class DepartmentSupportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ("id", "name", "year", "semester")
+
+
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
@@ -155,6 +161,7 @@ class BatchSerializer(serializers.ModelSerializer):
         departments = obj.department_set.all()
         if departments:
             return {
+                "id": departments[0].id,
                 "name": departments[0].name,
                 "year": departments[0].year,
                 "semester": departments[0].semester,
