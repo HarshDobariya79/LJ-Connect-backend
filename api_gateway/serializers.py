@@ -100,36 +100,6 @@ class StudyResourceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Department
-        fields = "__all__"
-
-    study_resource = serializers.PrimaryKeyRelatedField(
-        queryset=StudyResource.objects.all(), required=False, many=True
-    )
-
-    batch = serializers.PrimaryKeyRelatedField(
-        queryset=Batch.objects.all(), required=False, many=True
-    )
-
-    def update(self, instance, validated_data):
-        study_resource_data = validated_data.pop("study_resource", None)
-        batch_data = validated_data.pop("batch", None)
-
-        instance = super().update(instance, validated_data)
-
-        if study_resource_data is not None:
-            instance.study_resource.clear()
-            instance.study_resource.add(*study_resource_data)
-
-        if batch_data is not None:
-            instance.batch.clear()
-            instance.batch.add(*batch_data)
-
-        return instance
-
-
 class DepartmentSupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
@@ -168,3 +138,23 @@ class BatchSerializer(serializers.ModelSerializer):
             }
         else:
             return None
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    batch = BatchSupportSerializer(many=True, required=False)
+    branch = BranchSupportSerializer(many=True, required=False)
+    hod_data = StaffDetailSupportSerializer(source="hod", many=False, required=False)
+
+    class Meta:
+        model = Department
+        fields = (
+            "id",
+            "year",
+            "semester",
+            "name",
+            "batch",
+            "branch",
+            "hod",
+            "hod_data",
+            "locked",
+        )
