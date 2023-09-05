@@ -34,6 +34,7 @@ from .serializers import (
     StudyResourceSerializer,
     SubjectSerializer,
 )
+from .utils import get_email_from_access_token
 
 
 class StaffDetailAPI(APIView):
@@ -309,7 +310,12 @@ class BatchAPI(APIView):
     permission_classes = [IsAdmin | IsHOD]
 
     def get(self, request):
-        batches = Batch.objects.all()
+        email = get_email_from_access_token(request)
+        staff_obj = StaffDetail.objects.filter(email=email, admin=True)
+        if staff_obj:
+            batches = Batch.objects.all()
+        else:
+            batches = Batch.objects.filter(department__hod__email=email)
         serializer = BatchSerializer(batches, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
