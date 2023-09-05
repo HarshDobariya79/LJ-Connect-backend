@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from data.models import StaffDetail, StudentDetail
+from data.models import Department, StaffDetail, StudentDetail
 
 from .authentication_classes import IsAuthenticatedWithToken
 
@@ -36,5 +36,16 @@ class IsAdmin(BasePermission):
         if user and user.is_authenticated:
             staff_data = StaffDetail.objects.filter(email=user.email, admin=True)
             return bool(staff_data)
+
+        return False
+
+
+class IsHOD(BasePermission):
+    def has_permission(self, request, view):
+        user, auth = IsAuthenticatedWithToken().authenticate(request)
+
+        if user and user.is_authenticated:
+            departments = Department.objects.filter(locked=False, hod__email=user.email)
+            return bool(departments)
 
         return False
