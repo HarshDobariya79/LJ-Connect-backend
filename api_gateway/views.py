@@ -288,6 +288,12 @@ class OwnDepartmentAPI(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class BranchCompactAPI(APIView):
+    def get(self, request):
+        branches = Branch.objects.filter(available=True)
+        serializer = BranchSupportSerializer(branches, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class DepartmentAPI(APIView):
     permission_classes = [IsAdmin]
 
