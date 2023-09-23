@@ -18,6 +18,7 @@ from data.models import (
     StudentDetail,
     StudyResource,
     Subject,
+    Weightage,
 )
 
 from .serializers import (
@@ -34,6 +35,7 @@ from .serializers import (
     StudentDetailSupportSerializer,
     StudyResourceSerializer,
     SubjectSerializer,
+    WeightageSerializer,
 )
 from .utils import get_email_from_access_token
 
@@ -208,13 +210,67 @@ class FacultyAllocationAPI(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class SubjectAPI(APIView):
-    permission_classes = [IsAdmin]
-
+class SubjectWeightageAPI(APIView):
     def get(self, request):
         subjects = Subject.objects.all()
         serializer = SubjectSerializer(subjects, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        subject_serializer = SubjectSerializer(data=request.data)
+        if subject_serializer.is_valid():
+            subject = subject_serializer.save()
+
+            weightages_data = request.data.get("weightage")
+            if weightages_data:
+                for weightage_item in weightages_data:
+                    weightage = Weightage.objects.create(
+                        subject=subject, **weightage_item
+                    )
+                    subject.weightage.add(weightage)
+
+            return Response(subject_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(subject_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        subject_code = request.data.get("subject_code")
+        try:
+            subject = Subject.objects.get(subject_code=subject_code)
+        except Subject.DoesNotExist:
+            return Response(
+                {"detail": "Subject not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        subject_serializer = SubjectSerializer(subject, data=request.data)
+        if subject_serializer.is_valid():
+            subject_serializer.save()
+
+            weightages_data = request.data.get("weightage")
+            if weightages_data is not None:
+                existing_weightage_ids = [w.id for w in subject.weightage.all()]
+                updated_weightage_ids = [w_data.get("id") for w_data in weightages_data]
+
+                for weightage_id in existing_weightage_ids:
+                    if weightage_id not in updated_weightage_ids:
+                        weightage = Weightage.objects.get(id=weightage_id).delete()
+
+                for weightage_data in weightages_data:
+                    weightage_id = weightage_data.get("id")
+                    if weightage_id:
+                        weightage = Weightage.objects.get(id=weightage_id)
+                        for attr, value in weightage_data.items():
+                            setattr(weightage, attr, value)
+                        weightage.save()
+                        subject.weightage.add(weightage)
+
+                    else:
+                        weightage = Weightage.objects.create(
+                            subject=subject, **weightage_data
+                        )
+                        subject.weightage.add(weightage)
+
+            return Response(subject_serializer.data, status=status.HTTP_200_OK)
+        return Response(subject_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BatchAPI(APIView):
@@ -293,6 +349,7 @@ class BranchCompactAPI(APIView):
         branches = Branch.objects.filter(available=True)
         serializer = BranchSupportSerializer(branches, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class DepartmentAPI(APIView):
     permission_classes = [IsAdmin]

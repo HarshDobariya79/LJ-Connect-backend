@@ -9,6 +9,7 @@ from data.models import (
     StudentDetail,
     StudyResource,
     Subject,
+    Weightage,
 )
 
 
@@ -106,10 +107,81 @@ class DepartmentSupportSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "year", "semester")
 
 
+class WeightageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Weightage
+        fields = "__all__"
+
+
 class SubjectSerializer(serializers.ModelSerializer):
+    weightage = WeightageSerializer(many=True, required=False)  # Set required=False
+
     class Meta:
         model = Subject
-        fields = ("subject_code", "subject_short_name")
+        fields = "__all__"
+
+    def create(self, validated_data):
+        weightages_data = validated_data.pop(
+            "weightage", []
+        )  # Get weightages data or an empty list
+
+        subject = Subject.objects.create(**validated_data)
+
+        for weightage_data in weightages_data:
+            Weightage.objects.create(subject=subject, **weightage_data)
+
+        return subject
+
+    def update(self, instance, validated_data):
+        weightages_data = validated_data.pop("weightage", [])
+
+        instance.subject_short_name = validated_data.get(
+            "subject_short_name", instance.subject_short_name
+        )
+        instance.subject_full_name = validated_data.get(
+            "subject_full_name", instance.subject_full_name
+        )
+        instance.total_credit = validated_data.get(
+            "total_credit", instance.total_credit
+        )
+        instance.theory_credit = validated_data.get(
+            "theory_credit", instance.theory_credit
+        )
+        instance.tutorial_credit = validated_data.get(
+            "tutorial_credit", instance.tutorial_credit
+        )
+        instance.practical_credit = validated_data.get(
+            "practical_credit", instance.practical_credit
+        )
+
+        instance.save()
+
+        existing_weightage_ids = [w.id for w in instance.weightage.all()]
+
+        updated_weightage_ids = []
+        updated_weightages = []
+
+        for weightage_data in weightages_data:
+            weightage_id = weightage_data.get("id")
+            if weightage_id:
+                updated_weightage_ids.append(weightage_id)
+                updated_weightages.append(weightage_data)
+
+        for weightage_id in existing_weightage_ids:
+            if weightage_id not in updated_weightage_ids:
+                Weightage.objects.get(id=weightage_id).delete()
+
+        for weightage_data in updated_weightages:
+            weightage_id = weightage_data.get("id")
+            if weightage_id:
+                weightage = Weightage.objects.get(id=weightage_id)
+                for attr, value in weightage_data.items():
+                    setattr(weightage, attr, value)
+                weightage.save()
+            else:
+                Weightage.objects.create(subject=instance, **weightage_data)
+
+        return instance
 
 
 class BatchSerializer(serializers.ModelSerializer):
